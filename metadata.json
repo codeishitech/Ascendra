@@ -1,0 +1,6 @@
+{
+  "name": "Ascendra",
+  "description": "Forge your skills. Unlock your future. RPG-style career development world with interactive skill trees, AI quests, boss battles, and adaptive progression.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

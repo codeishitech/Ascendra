@@ -1,0 +1,837 @@
+{
+  "users": [],
+  "userStates": {},
+  "defaultState": {
+    "profile": {
+      "targetRole": "Autonomous Systems Engineer",
+      "targetRoleDescription": "An Autonomous Systems Engineer designs, implements, and validates resilient software architectures spanning sensor fusion, optimal control, path planning, and safety-critical execution for autonomous vehicles, robotics, and aerospace systems.",
+      "experienceLevel": "intermediate",
+      "weeklyHours": 15,
+      "currentSkills": [
+        {
+          "id": "s1",
+          "name": "Python",
+          "category": "Programming",
+          "verification": "project_evidence",
+          "rating": 4,
+          "evidenceUrl": "https://github.com/example/python-data-structures"
+        },
+        {
+          "id": "s2",
+          "name": "Linear Algebra & Calculus",
+          "category": "Mathematics",
+          "verification": "assessed",
+          "rating": 3
+        },
+        {
+          "id": "s3",
+          "name": "NumPy & Pandas",
+          "category": "Data Science",
+          "verification": "project_evidence",
+          "rating": 4
+        },
+        {
+          "id": "s4",
+          "name": "PyTorch Basics",
+          "category": "Deep Learning",
+          "verification": "self_reported",
+          "rating": 2
+        }
+      ],
+      "currentProjects": [
+        {
+          "title": "CIFAR-10 Residual ConvNet",
+          "description": "Trained ResNet-18 variant achieving 91.4% test accuracy with data augmentations.",
+          "link": "https://github.com/example/cifar-resnet"
+        }
+      ],
+      "xp": 1350,
+      "level": 4,
+      "title": "Tensor Apprentice",
+      "competenciesVerifiedCount": 3
+    },
+    "roadmap": {
+      "targetRole": "Autonomous Systems Engineer",
+      "nodes": [
+        {
+          "id": "node-1",
+          "title": "State Estimation & Sensor Fusion",
+          "subtitle": "Extended Kalman filtering & IMU integration",
+          "tier": 1,
+          "category": "skill",
+          "prerequisites": [],
+          "estimatedHours": 30,
+          "position": {
+            "x": 80,
+            "y": 200
+          },
+          "quest": {
+            "objective": "Implement an Extended Kalman Filter (EKF) to fuse noisy GNSS and IMU telemetry.",
+            "brief": "Build an EKF pipeline in C++ or Python that ingests synthetic sensor streams and tracks vehicle 6-DOF position and velocity under non-linear motion models.",
+            "steps": [
+              "Derive the non-linear motion and observation Jacobians for bicycle vehicle kinematics.",
+              "Implement prediction and correction update loops handling out-of-order and dropped packets.",
+              "Benchmark state estimation error metrics against synthetic ground truth trajectories."
+            ],
+            "tangibleDeliverable": "A tested C++ state estimation package with synthetic sensor data generation and evaluation plots.",
+            "deliverableType": "github_repo",
+            "rubric": [
+              {
+                "id": "crit-1",
+                "name": "Filter Convergence",
+                "weight": 40,
+                "description": "Estimator covariance converges within 20 timesteps without divergence during turns.",
+                "maxScore": 100
+              },
+              {
+                "id": "crit-2",
+                "name": "Latency Profile",
+                "weight": 30,
+                "description": "Per-step update latency executes below 5 milliseconds on sample synthetic streams.",
+                "maxScore": 100
+              },
+              {
+                "id": "crit-3",
+                "name": "Covariance Consistency",
+                "weight": 30,
+                "description": "Normalized Estimation Error Squared (NEES) remains within 95% chi-square bounds.",
+                "maxScore": 100
+              }
+            ],
+            "curatedResources": [
+              {
+                "title": "Probabilistic Robotics - Thrun et al.",
+                "url": "https://mitpress.mit.edu/9780262201629/probabilistic-robotics/",
+                "type": "paper"
+              },
+              {
+                "title": "Kalman and Bayesian Filters in Python",
+                "url": "https://github.com/rlabbe/Kalman-and-Bayesian-Filters-in-Python",
+                "type": "guide"
+              }
+            ],
+            "interviewQuestions": [
+              "How do you detect and handle filter divergence caused by unmodeled sensor biases?",
+              "What are the computational trade-offs between an Extended Kalman Filter and an Unscented Kalman Filter?"
+            ],
+            "xpReward": 450,
+            "estimatedHours": 30
+          },
+          "status": "available"
+        },
+        {
+          "id": "node-2",
+          "title": "Optimal Vehicle Control",
+          "subtitle": "Model predictive control & dynamic stability",
+          "tier": 1,
+          "category": "skill",
+          "prerequisites": [],
+          "estimatedHours": 30,
+          "position": {
+            "x": 80,
+            "y": 360
+          },
+          "quest": {
+            "objective": "Formulate and execute a Model Predictive Controller (MPC) for high-speed lateral control.",
+            "brief": "Develop a non-linear MPC using CasADi or OSQP that tracks high-curvature trajectories while respecting actuator saturation constraints.",
+            "steps": [
+              "Formulate kinematic and dynamic bicycle models with tire friction constraints.",
+              "Set up the quadratic programming optimization problem with slack variables for slip angles.",
+              "Simulate trajectory tracking against dynamic disturbances such as variable friction surfaces."
+            ],
+            "tangibleDeliverable": "MPC implementation repository with automated trajectory tracking visualizations and tuning scripts.",
+            "deliverableType": "github_repo",
+            "rubric": [
+              {
+                "id": "crit-1",
+                "name": "Tracking Accuracy",
+                "weight": 40,
+                "description": "Cross-track error remains below 0.15 meters at speeds up to 15 m/s.",
+                "maxScore": 100
+              },
+              {
+                "id": "crit-2",
+                "name": "Constraint Enforcement",
+                "weight": 30,
+                "description": "Steering angle rate and tire slip limits are strictly respected without solver failures.",
+                "maxScore": 100
+              },
+              {
+                "id": "crit-3",
+                "name": "Solver Determinism",
+                "weight": 30,
+                "description": "MPC optimization solves within the 20 millisecond control cycle limit.",
+                "maxScore": 100
+              }
+            ],
+            "curatedResources": [
+              {
+                "title": "Underactuated Robotics - Tedrake",
+                "url": "https://underactuated.csail.mit.edu/",
+                "type": "guide"
+              },
+              {
+                "title": "OSQP Solver Documentation",
+                "url": "https://osqp.org/docs/",
+                "type": "documentation"
+              }
+            ],
+            "interviewQuestions": [
+              "How do you formulate slack variables in MPC to prevent infeasibility during sudden disturbances?",
+              "What are the core differences between Kinematic and Dynamic bicycle models in real-world control?"
+            ],
+            "xpReward": 450,
+            "estimatedHours": 30
+          },
+          "status": "available"
+        },
+        {
+          "id": "node-3",
+          "title": "ROS 2 Real-Time Middleware",
+          "subtitle": "DDS QoS profiles & deterministic executor nodes",
+          "tier": 2,
+          "category": "project",
+          "prerequisites": [
+            "node-1"
+          ],
+          "estimatedHours": 45,
+          "position": {
+            "x": 380,
+            "y": 200
+          },
+          "quest": {
+            "objective": "Architect a deterministic ROS 2 software stack with custom DDS QoS profiles.",
+            "brief": "Build a multi-threaded ROS 2 node architecture with zero-copy intra-process communication, deterministic lifecycle nodes, and budget-monitored callback execution.",
+            "steps": [
+              "Implement ROS 2 lifecycle management nodes for sensor acquisition and actuators.",
+              "Configure DDS XML profiles optimizing throughput and reliability for camera and LiDAR topics.",
+              "Measure and eliminate jitter using Linux PREEMPT_RT kernel tooling and tracing."
+            ],
+            "tangibleDeliverable": "Deterministic ROS 2 package repository containing lifecycle configurations, DDS profiles, and latency traces.",
+            "deliverableType": "github_repo",
+            "rubric": [
+              {
+                "id": "crit-1",
+                "name": "Lifecycle Correctness",
+                "weight": 35,
+                "description": "All nodes transition cleanly through configure, activate, deactivate, and cleanup states.",
+                "maxScore": 100
+              },
+              {
+                "id": "crit-2",
+                "name": "Zero-Copy Efficiency",
+                "weight": 35,
+                "description": "Intra-process communication utilizes loaning mechanisms with zero serialization copies.",
+                "maxScore": 100
+              },
+              {
+                "id": "crit-3",
+                "name": "Deterministic Jitter",
+                "weight": 30,
+                "description": "Callback scheduling latency displays standard deviation under 1.5 milliseconds under load.",
+                "maxScore": 100
+              }
+            ],
+            "curatedResources": [
+              {
+                "title": "ROS 2 Design Documentation",
+                "url": "https://design.ros2.org/",
+                "type": "documentation"
+              },
+              {
+                "title": "Real-Time Linux Collaborative Project Guide",
+                "url": "https://wiki.linuxfoundation.org/realtime/start",
+                "type": "guide"
+              }
+            ],
+            "interviewQuestions": [
+              "Why is DDS Quality of Service (QoS) history depth critical for sensor streaming in autonomous robotics?",
+              "How does ROS 2 achieve deterministic execution across multiple timer callbacks on multicore CPUs?"
+            ],
+            "xpReward": 600,
+            "estimatedHours": 45
+          },
+          "status": "locked"
+        },
+        {
+          "id": "node-4",
+          "title": "Trajectory Generation & Motion Planning",
+          "subtitle": "Search-based planning & Frenet frame trajectory generation",
+          "tier": 2,
+          "category": "project",
+          "prerequisites": [
+            "node-2"
+          ],
+          "estimatedHours": 45,
+          "position": {
+            "x": 380,
+            "y": 360
+          },
+          "quest": {
+            "objective": "Develop a real-time Frenet frame local trajectory planner for dynamic obstacle avoidance.",
+            "brief": "Create a lattice trajectory generator that transforms global waypoints into curvilinear coordinates, generates candidate maneuvers, and evaluates collision costs.",
+            "steps": [
+              "Transform global cartesian road maps into curvilinear Frenet s-d coordinates.",
+              "Generate longitudinal and lateral quartic and quintic polynomial trajectories.",
+              "Score trajectories using jerk, curvature, distance-to-obstacle, and lane-centering cost functions."
+            ],
+            "tangibleDeliverable": "C++ trajectory planner repository benchmarked against dynamic obstacles in simulated highway environments.",
+            "deliverableType": "github_repo",
+            "rubric": [
+              {
+                "id": "crit-1",
+                "name": "Collision Avoidance",
+                "weight": 40,
+                "description": "Avoids static and moving obstacles with zero collision occurrences across 50 test runs.",
+                "maxScore": 100
+              },
+              {
+                "id": "crit-2",
+                "name": "Comfort & Feasibility",
+                "weight": 30,
+                "description": "All generated maneuvers satisfy acceleration and jerk comfort constraints.",
+                "maxScore": 100
+              },
+              {
+                "id": "crit-3",
+                "name": "Re-planning Frequency",
+                "weight": 30,
+                "description": "Planner generates and selects optimal paths at or above 10 Hz.",
+                "maxScore": 100
+              }
+            ],
+            "curatedResources": [
+              {
+                "title": "Optimal Trajectory Generation for Dynamic Street Scenarios - Werling et al.",
+                "url": "https://ieeexplore.ieee.org/document/5509799",
+                "type": "paper"
+              },
+              {
+                "title": "Autonomous Driving Path Planning Guide",
+                "url": "https://github.com/AtsushiSakai/PythonRobotics",
+                "type": "guide"
+              }
+            ],
+            "interviewQuestions": [
+              "What are the advantages of planning in the Frenet frame compared to Cartesian space?",
+              "How do you mathematically bound lateral acceleration and jerk during high-speed lane changes?"
+            ],
+            "xpReward": 600,
+            "estimatedHours": 45
+          },
+          "status": "locked"
+        },
+        {
+          "id": "node-5",
+          "title": "LiDAR SLAM & Perception Pipelines",
+          "subtitle": "Point cloud registration & factor graph optimization",
+          "tier": 3,
+          "category": "assessment",
+          "prerequisites": [
+            "node-3"
+          ],
+          "estimatedHours": 50,
+          "position": {
+            "x": 680,
+            "y": 200
+          },
+          "quest": {
+            "objective": "Construct a 3D LiDAR odometry and mapping module backed by factor graph optimization.",
+            "brief": "Build an odometry engine using Generalized Iterative Closest Point (G-ICP) coupled with GTSAM factor graph optimization for loop-closure detection and drift correction.",
+            "steps": [
+              "Implement point cloud voxel filtering, ground plane removal, and normal estimation.",
+              "Construct frame-to-frame scan matching using G-ICP to generate odometry factors.",
+              "Integrate loop-closure verification and optimize the global pose graph with GTSAM."
+            ],
+            "tangibleDeliverable": "A reproducible evaluation report and code repository benchmarking mapping drift on the KITTI Odometry dataset.",
+            "deliverableType": "benchmark_report",
+            "rubric": [
+              {
+                "id": "crit-1",
+                "name": "Odometry Drift",
+                "weight": 40,
+                "description": "Translational drift remains under 1.2% over a 2-kilometer trajectory without GPS.",
+                "maxScore": 100
+              },
+              {
+                "id": "crit-2",
+                "name": "Factor Graph Optimization",
+                "weight": 30,
+                "description": "Loop closures correctly eliminate accumulated drift and minimize residual chi-square errors.",
+                "maxScore": 100
+              },
+              {
+                "id": "crit-3",
+                "name": "Compute Throughput",
+                "weight": 30,
+                "description": "Point cloud preprocessing and scan matching process incoming scans at 10 Hz or higher.",
+                "maxScore": 100
+              }
+            ],
+            "curatedResources": [
+              {
+                "title": "GTSAM Library Documentation",
+                "url": "https://gtsam.org/",
+                "type": "documentation"
+              },
+              {
+                "title": "LIO-SAM: Tightly-coupled Lidar Inertial Odometry",
+                "url": "https://arxiv.org/abs/2007.00258",
+                "type": "paper"
+              }
+            ],
+            "interviewQuestions": [
+              "How do degenerate environments (such as featureless tunnels) impact LiDAR scan matching?",
+              "What is the role of information matrices and noise models in factor graph optimization?"
+            ],
+            "xpReward": 750,
+            "estimatedHours": 50
+          },
+          "status": "locked"
+        },
+        {
+          "id": "node-6",
+          "title": "SIL/HIL Safety & Failsafe Verification",
+          "subtitle": "ISO 26262 testing & CARLA co-simulation pipeline",
+          "tier": 3,
+          "category": "milestone",
+          "prerequisites": [
+            "node-3",
+            "node-4"
+          ],
+          "estimatedHours": 50,
+          "position": {
+            "x": 680,
+            "y": 360
+          },
+          "quest": {
+            "objective": "Create an automated Software-in-the-Loop (SIL) CI/CD regression suite for safety validation.",
+            "brief": "Develop a scenario-based testing harness using CARLA simulator and PyTest that evaluates autonomous system safety against critical ISO 26262 operational design scenarios.",
+            "steps": [
+              "Define OpenSCENARIO or Python-scripted edge-case driving scenarios in CARLA.",
+              "Build an automated harness that injects sensor dropouts, latency spikes, and obstacle cut-ins.",
+              "Implement an automated pass/fail safety evaluator monitoring Time-To-Collision (TTC) and safety envelopes."
+            ],
+            "tangibleDeliverable": "Automated CI/CD test harness repository with automated evaluation reports and simulation video artifacts.",
+            "deliverableType": "benchmark_report",
+            "rubric": [
+              {
+                "id": "crit-1",
+                "name": "Edge-Case Coverage",
+                "weight": 40,
+                "description": "Harness executes at least 15 varied safety-critical operational design domain scenarios.",
+                "maxScore": 100
+              },
+              {
+                "id": "crit-2",
+                "name": "Fault Injection Verification",
+                "weight": 30,
+                "description": "System triggers deterministic failsafe emergency stops during injected sensor drops within 100 ms.",
+                "maxScore": 100
+              },
+              {
+                "id": "crit-3",
+                "name": "CI Integration",
+                "weight": 30,
+                "description": "Headless CARLA testing executes automatically on git commit with detailed metric summaries.",
+                "maxScore": 100
+              }
+            ],
+            "curatedResources": [
+              {
+                "title": "CARLA Simulator Documentation",
+                "url": "https://carla.readthedocs.io/",
+                "type": "documentation"
+              },
+              {
+                "title": "ISO 26262 Functional Safety Overview",
+                "url": "https://www.iso.org/standard/68383.html",
+                "type": "documentation"
+              }
+            ],
+            "interviewQuestions": [
+              "How do you calculate Time-to-Collision (TTC) under non-constant relative velocity conditions?",
+              "What architectural strategies ensure deterministic failsafe degradation when primary compute nodes fail?"
+            ],
+            "xpReward": 750,
+            "estimatedHours": 50
+          },
+          "status": "locked"
+        },
+        {
+          "id": "node-7",
+          "title": "Autonomous Rover Stack & Fail-Operational Boss Battle",
+          "subtitle": "Full stack end-to-end autonomous navigation system",
+          "tier": 4,
+          "category": "boss_battle",
+          "prerequisites": [
+            "node-5",
+            "node-6"
+          ],
+          "estimatedHours": 80,
+          "position": {
+            "x": 960,
+            "y": 280
+          },
+          "quest": {
+            "objective": "Deploy a resilient, end-to-end autonomous system capable of navigating unknown environments while handling hardware faults.",
+            "brief": "Integrate perception, state estimation, local planning, real-time control, and supervisory failsafes into a unified autonomous stack deployed in a photorealistic simulated world with adversarial environmental conditions.",
+            "steps": [
+              "Integrate LiDAR perception, EKF fusion, Frenet motion planning, and MPC control into a consolidated ROS 2 runtime.",
+              "Configure supervisory health-monitoring nodes that dynamically switch navigation modes upon sensor degradation.",
+              "Execute an autonomous 5-kilometer navigation trial in CARLA under rain, nighttime visibility, dynamic actors, and simulated actuator degradation."
+            ],
+            "tangibleDeliverable": "Production-grade autonomous vehicle software stack with demonstration video, comprehensive architecture document, and SIL verification logs.",
+            "deliverableType": "github_repo",
+            "rubric": [
+              {
+                "id": "crit-1",
+                "name": "Autonomous Mission Success",
+                "weight": 40,
+                "description": "Successfully navigates the 5-kilometer mission without collisions or disengagements.",
+                "maxScore": 100
+              },
+              {
+                "id": "crit-2",
+                "name": "Resilience & Fault Tolerance",
+                "weight": 35,
+                "description": "Properly degrades to degraded-sensor safe harbor state when sensor streams are severed.",
+                "maxScore": 100
+              },
+              {
+                "id": "crit-3",
+                "name": "Architectural Quality & Cleanliness",
+                "weight": 25,
+                "description": "Architecture adheres to modular ROS 2 best practices with full test coverage and documentation.",
+                "maxScore": 100
+              }
+            ],
+            "curatedResources": [
+              {
+                "title": "Autoware Universe Architecture Documentation",
+                "url": "https://autowarefoundation.github.io/autoware-documentation/main/",
+                "type": "documentation"
+              },
+              {
+                "title": "Safety of the Intended Functionality (SOTIF) ISO 21448",
+                "url": "https://www.iso.org/standard/77490.html",
+                "type": "paper"
+              }
+            ],
+            "interviewQuestions": [
+              "Walk me through the lifecycle of your system when a front LiDAR sensor begins dropping frames during a high-speed maneuver.",
+              "How do you balance compute resource contention between heavy perception models and tight real-time control loops?"
+            ],
+            "xpReward": 2000,
+            "estimatedHours": 80
+          },
+          "status": "locked"
+        }
+      ],
+      "edges": [
+        {
+          "id": "edge-1-3",
+          "source": "node-1",
+          "target": "node-3",
+          "animated": true
+        },
+        {
+          "id": "edge-2-4",
+          "source": "node-2",
+          "target": "node-4",
+          "animated": true
+        },
+        {
+          "id": "edge-3-5",
+          "source": "node-3",
+          "target": "node-5",
+          "animated": true
+        },
+        {
+          "id": "edge-3-6",
+          "source": "node-3",
+          "target": "node-6",
+          "animated": true
+        },
+        {
+          "id": "edge-4-6",
+          "source": "node-4",
+          "target": "node-6",
+          "animated": true
+        },
+        {
+          "id": "edge-5-7",
+          "source": "node-5",
+          "target": "node-7",
+          "animated": true
+        },
+        {
+          "id": "edge-6-7",
+          "source": "node-6",
+          "target": "node-7",
+          "animated": true
+        }
+      ],
+      "lastAdaptiveChange": {
+        "reason": "New personalized Career World generated for \"Autonomous Systems Engineer\" tailored to 15 hrs/week dedication.",
+        "timestamp": "2026-10-10T06:22:17.663Z",
+        "affectedNodes": [
+          "node-1",
+          "node-2",
+          "node-3",
+          "node-4",
+          "node-5",
+          "node-6",
+          "node-7"
+        ],
+        "unlockedCount": 2
+      }
+    },
+    "inventory": [
+      {
+        "id": "inv-1",
+        "nodeId": "node-py-perf",
+        "title": "Python High-Performance Profiling Report",
+        "category": "Optimization Benchmark",
+        "verification": "project_evidence",
+        "deliverableType": "benchmark_report",
+        "artifactUrl": "https://github.com/example/python-perf-benchmarks",
+        "notes": "Achieved 8.2x speedup using Cython bindings and memory caching. Verified by peer benchmark.",
+        "dateAdded": "2026-09-15",
+        "xpEarned": 350
+      },
+      {
+        "id": "inv-2",
+        "nodeId": "node-linalg-tensors",
+        "title": "Reverse-Mode Autodiff Engine (Micrograd-Extended)",
+        "category": "Core System",
+        "verification": "project_evidence",
+        "deliverableType": "github_repo",
+        "artifactUrl": "https://github.com/example/micrograd-extended",
+        "notes": "Unit tested backpropagation engine passing gradient checking with epsilon 1e-6.",
+        "dateAdded": "2026-09-28",
+        "xpEarned": 500
+      },
+      {
+        "id": "inv-3",
+        "title": "Linear Algebra & Calculus Diagnostic Assessment",
+        "category": "Assessment",
+        "verification": "assessed",
+        "deliverableType": "code_review",
+        "artifactUrl": "https://example.com/assessments/math-diagnostic-892",
+        "notes": "Scored 88% on vector spaces, eigenvalues, and multivariate Jacobian matrices.",
+        "dateAdded": "2026-09-10",
+        "xpEarned": 500
+      }
+    ],
+    "bossBattles": [
+      {
+        "id": "boss-1791613337664",
+        "title": "Autonomous Systems Engineer Apex Capstone Challenge",
+        "codename": "OP: AUTONOMOUS_SYSTEMS_ENGINEER_APEX",
+        "description": "Synthesize production systems, scientific evaluation, and scalable deployment for the Autonomous Systems Engineer specialization.",
+        "hpTotal": 4000,
+        "hpCurrent": 4000,
+        "requiredSkills": [
+          "State Estimation & Sensor Fusion",
+          "Optimal Vehicle Control",
+          "ROS 2 Real-Time Middleware",
+          "Trajectory Generation & Motion Planning"
+        ],
+        "phases": [
+          {
+            "id": "p1",
+            "title": "Phase 1: Architecture Specification",
+            "deliverable": "System design RFC and interface contracts",
+            "completed": false,
+            "xp": 500
+          },
+          {
+            "id": "p2",
+            "title": "Phase 2: Core Implementation",
+            "deliverable": "Production codebase with test suite",
+            "completed": false,
+            "xp": 500
+          },
+          {
+            "id": "p3",
+            "title": "Phase 3: Rigorous Benchmarks",
+            "deliverable": "Performance and reliability validation report",
+            "completed": false,
+            "xp": 500
+          },
+          {
+            "id": "p4",
+            "title": "Phase 4: Live Deployment",
+            "deliverable": "Publicly reachable prototype or artifact",
+            "completed": false,
+            "xp": 500
+          }
+        ],
+        "status": "locked",
+        "lootSummary": "Verified Autonomous Systems Engineer Elite Credential, Career Inventory Capstone Item, +2000 XP",
+        "xpReward": 2000
+      }
+    ],
+    "connectedMentors": [
+      "mentor-elena"
+    ]
+  },
+  "mentors": [
+    {
+      "id": "mentor-elena",
+      "name": "Dr. Elena Vance",
+      "title": "Staff AI Research Scientist",
+      "company": "Google DeepMind",
+      "roleSpecialty": "AI Research & Foundation Models",
+      "bio": "Leads reasoning architecture research. Focuses on transformer mechanics, KV-cache latency optimizations, and scientific evaluation benchmarks.",
+      "experienceYears": 9,
+      "avatarUrl": "EV",
+      "rating": 4.96,
+      "reviewCount": 42,
+      "availability": "Accepting Mentees",
+      "skills": [
+        "PyTorch",
+        "Transformer Theory",
+        "Distributed Training",
+        "vLLM",
+        "Scientific Benchmarks"
+      ],
+      "verifiedCompany": true
+    },
+    {
+      "id": "mentor-marcus",
+      "name": "Marcus Chen",
+      "title": "Principal Distributed Systems Architect",
+      "company": "Netflix Systems",
+      "roleSpecialty": "Distributed Systems & Cloud",
+      "bio": "Designs multi-region event streaming meshes, consensus engines (Raft), and low-latency distributed storage systems serving 250M+ users.",
+      "experienceYears": 12,
+      "avatarUrl": "MC",
+      "rating": 4.94,
+      "reviewCount": 56,
+      "availability": "Limited Slots",
+      "skills": [
+        "Go",
+        "Raft Consensus",
+        "Kafka",
+        "Distributed KV",
+        "Fault Tolerance"
+      ],
+      "verifiedCompany": true
+    },
+    {
+      "id": "mentor-priya",
+      "name": "Priya Sharma",
+      "title": "Staff Infrastructure & MLOps Lead",
+      "company": "Stripe",
+      "roleSpecialty": "Cloud Infrastructure & MLOps",
+      "bio": "Specializes in Kubernetes cluster scheduling, multi-cloud Terraform pipelines, and high-throughput model inference serving at financial scale.",
+      "experienceYears": 8,
+      "avatarUrl": "PS",
+      "rating": 4.98,
+      "reviewCount": 38,
+      "availability": "Accepting Mentees",
+      "skills": [
+        "Kubernetes",
+        "Terraform",
+        "GPU Scheduling",
+        "Observability",
+        "GitOps"
+      ],
+      "verifiedCompany": true
+    },
+    {
+      "id": "mentor-alex",
+      "name": "Alexander Ruiz",
+      "title": "Robotics Autonomy Systems Lead",
+      "company": "Boston Dynamics",
+      "roleSpecialty": "Autonomous Systems & Robotics",
+      "bio": "Architect of real-time control loops, sensor fusion algorithms (EKF), and hardware-accelerated SLAM systems for legged robotics.",
+      "experienceYears": 10,
+      "avatarUrl": "AR",
+      "rating": 4.91,
+      "reviewCount": 29,
+      "availability": "Accepting Mentees",
+      "skills": [
+        "ROS2",
+        "C++20",
+        "Sensor Fusion",
+        "LiDAR SLAM",
+        "Real-Time Control"
+      ],
+      "verifiedCompany": true
+    },
+    {
+      "id": "mentor-sarah",
+      "name": "Sarah Jenkins",
+      "title": "Staff Kernel Security Specialist",
+      "company": "Trail of Bits",
+      "roleSpecialty": "Cyber Threat Defense & Systems",
+      "bio": "Binary exploitation researcher, Linux eBPF telemetry developer, and memory-safe systems engineer. Guides students through secure systems rigor.",
+      "experienceYears": 11,
+      "avatarUrl": "SJ",
+      "rating": 4.97,
+      "reviewCount": 47,
+      "availability": "Limited Slots",
+      "skills": [
+        "eBPF",
+        "Rust",
+        "Linux Kernel",
+        "Memory Safety",
+        "Threat Modeling"
+      ],
+      "verifiedCompany": true
+    },
+    {
+      "id": "mentor-david",
+      "name": "David K. O'Connor",
+      "title": "Principal Web Platform Architect",
+      "company": "Figma",
+      "roleSpecialty": "Full-Stack Architecture & WebAssembly",
+      "bio": "Specializes in high-performance collaborative real-time canvases, WebAssembly graphic runtimes, and distributed state CRDTs.",
+      "experienceYears": 9,
+      "avatarUrl": "DO",
+      "rating": 4.93,
+      "reviewCount": 34,
+      "availability": "Accepting Mentees",
+      "skills": [
+        "TypeScript",
+        "WebAssembly",
+        "CRDTs",
+        "WebGL Canvas",
+        "System Design"
+      ],
+      "verifiedCompany": true
+    }
+  ],
+  "messages": [
+    {
+      "id": "msg-seed-1",
+      "senderId": "mentor-elena",
+      "recipientId": "guest",
+      "mentorId": "mentor-elena",
+      "senderRole": "mentor",
+      "text": "Welcome to Ascendra! I reviewed your starting profile for the AI Research Engineer path. The reverse-mode autodiff project is an excellent foundation. When you start the custom PyTorch CUDA ops quest, make sure you pay close attention to memory pinning and gradcheck numerical stability.",
+      "timestamp": "2026-10-08T10:15:00Z"
+    },
+    {
+      "id": "msg-u-1791613377223",
+      "senderId": "guest",
+      "recipientId": "mentor-elena",
+      "mentorId": "mentor-elena",
+      "senderRole": "student",
+      "text": "Hi Dr. Vance, can you review my approach to KV-cache optimization?",
+      "timestamp": "2026-10-10T06:22:57.223Z"
+    },
+    {
+      "id": "msg-m-1791613386212",
+      "senderId": "mentor-elena",
+      "recipientId": "guest",
+      "mentorId": "mentor-elena",
+      "senderRole": "mentor",
+      "text": "I'd be glad to take a look! For an aspiring Autonomous Systems Engineer, mastering KV-cache efficiency is critical—onboard compute for autonomous platforms doesn't give you the luxury of endless H100 clusters. You are dealing with strict real-time latency budgets, thermal throttling, and hard VRAM ceilings where tail latency (P99) can dictate safety. \n\nBefore you drop the code or architecture spec, I want to know where your optimization is targeted. Are you tackling the *runtime/memory management* layer—say, non-contiguous block allocation similar to vLLM's PagedAttention, chunked prefill, or low-bit quantization (FP8/INT4 scales)—or are you working on *algorithmic eviction*, like StreamingLLM with attention sinks, heavy-hitter eviction, or cross-layer sharing? For autonomous agents running long horizon-planning loops, how you preserve critical temporal tokens versus transient sensor noise makes or breaks your context window.\n\nDrop your implementation details, pseudocode, or PyTorch snippet along with how you're profiling it. Make sure you include your baseline metrics: are you measuring TTFT (Time-to-First-Token), inter-token latency (ITL), or pure memory fragmentation via PyTorch’s CUDA memory snapshot or Nsight Systems? Let's see what you've built.",
+      "timestamp": "2026-10-10T06:23:07.211Z"
+    }
+  ]
+}

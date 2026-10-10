@@ -1,0 +1,74 @@
+@import "tailwindcss";
+@import "@xyflow/react/dist/style.css";
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background-color: #020617;
+    color: #f8fafc;
+  }
+  h1, h2, h3, h4, .font-display {
+    font-family: 'Outfit', sans-serif;
+  }
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+/* Custom React Flow Dark Canvas overrides */
+.react-flow__background {
+  background-color: #020617 !important;
+}
+
+.react-flow__controls {
+  border-radius: 0.75rem !important;
+  overflow: hidden !important;
+  background-color: #0f172a !important;
+  border: 1px solid #1e293b !important;
+}
+
+.react-flow__controls-button {
+  background-color: #0f172a !important;
+  border-bottom: 1px solid #1e293b !important;
+  color: #94a3b8 !important;
+  fill: #94a3b8 !important;
+}
+
+.react-flow__controls-button:hover {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  fill: #f8fafc !important;
+}
+
+.react-flow__edge-path {
+  stroke: #334155 !important;
+  stroke-width: 2 !important;
+}
+
+.react-flow__edge.animated .react-flow__edge-path {
+  stroke: #0ea5e9 !important;
+  stroke-width: 2.5 !important;
+  stroke-dasharray: 6 !important;
+  animation: flowEdge 1s linear infinite !important;
+}
+
+@keyframes flowEdge {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Glassmorphism subtle surface */
+.surface-card {
+  background-color: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(51, 65, 85, 0.4);
+}
+
+.surface-card-hover:hover {
+  border-color: rgba(14, 165, 233, 0.5);
+  box-shadow: 0 0 25px -5px rgba(14, 165, 233, 0.15);
+}
