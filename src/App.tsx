@@ -11,6 +11,7 @@ import { CareerTwinCard } from './components/CareerTwinCard';
 import { AdaptiveNotice } from './components/AdaptiveNotice';
 import { MentorConnectView } from './components/MentorConnectView';
 import { AuthModal } from './components/AuthModal';
+import { LoginPage } from './components/LoginPage';
 import { JudgeTourBanner } from './components/JudgeTourBanner';
 import { JudgeDeckModal } from './components/JudgeDeckModal';
 import { api, getStoredUser, clearStoredAuth } from './services/api';
@@ -221,6 +222,11 @@ export default function App() {
       setAdaptiveNotice(res.roadmap.lastAdaptiveChange);
     }
   };
+
+  // If not logged in, show dedicated Login / Create Account page
+  if (!currentUser) {
+    return <LoginPage onAuthSuccess={handleAuthSuccess} />;
+  }
 
   if (loading && !profile) {
     return (

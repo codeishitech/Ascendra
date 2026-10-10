@@ -107,9 +107,10 @@ export function Header({
               <button
                 onClick={onLogout}
                 title="Log Out"
-                className="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-slate-900 transition-colors"
+                className="flex items-center gap-1 px-2.5 py-1.5 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-slate-900 transition-colors text-xs font-medium"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Log Out</span>
               </button>
             </div>
           ) : (
