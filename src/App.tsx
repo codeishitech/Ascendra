@@ -12,9 +12,11 @@ import { AdaptiveNotice } from './components/AdaptiveNotice';
 import { MentorConnectView } from './components/MentorConnectView';
 import { AuthModal } from './components/AuthModal';
 import { LoginPage } from './components/LoginPage';
+import { AnimatedBackground } from './components/AnimatedBackground';
 import { JudgeTourBanner } from './components/JudgeTourBanner';
 import { JudgeDeckModal } from './components/JudgeDeckModal';
 import { api, getStoredUser, clearStoredAuth } from './services/api';
+import { applyTheme, getStoredTheme } from './services/theme';
 import type {
   CareerDNA,
   CareerWorldData,
@@ -89,6 +91,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    applyTheme(getStoredTheme());
     loadData();
   }, [loadData]);
 
@@ -254,7 +257,9 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col antialiased">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col antialiased relative">
+      <AnimatedBackground />
+
       {/* Judge Pitch Tour & Live Presentation Shortcuts */}
       <JudgeTourBanner
         currentStep={judgeStep}

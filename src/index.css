@@ -1,11 +1,322 @@
 @import "tailwindcss";
 @import "@xyflow/react/dist/style.css";
 
+/* ===================================================
+   CANDY CRUSH & DYNAMIC COLOR THEME ENGINE
+   =================================================== */
+
+:root, [data-theme="candy"] {
+  --theme-accent: #f43f5e;
+  --theme-accent-hover: #e11d48;
+  --theme-edge: #f43f5e;
+  --theme-glow: rgba(244, 63, 94, 0.35);
+  --theme-bg-gradient: linear-gradient(135deg, rgba(244, 63, 94, 0.2), rgba(168, 85, 247, 0.2));
+  --theme-brand-gradient: linear-gradient(to top right, #f43f5e, #ec4899);
+}
+
+[data-theme="cyber"] {
+  --theme-accent: #38bdf8;
+  --theme-accent-hover: #0284c7;
+  --theme-edge: #0ea5e9;
+  --theme-glow: rgba(14, 165, 233, 0.25);
+  --theme-bg-gradient: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(99, 102, 241, 0.15));
+  --theme-brand-gradient: linear-gradient(to top right, #38bdf8, #6366f1);
+}
+
+[data-theme="gold"] {
+  --theme-accent: #fbbf24;
+  --theme-accent-hover: #d97706;
+  --theme-edge: #f59e0b;
+  --theme-glow: rgba(245, 158, 11, 0.25);
+  --theme-bg-gradient: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(234, 88, 12, 0.15));
+  --theme-brand-gradient: linear-gradient(to top right, #fbbf24, #ea580c);
+}
+
+[data-theme="nebula"] {
+  --theme-accent: #c084fc;
+  --theme-accent-hover: #9333ea;
+  --theme-edge: #a855f7;
+  --theme-glow: rgba(168, 85, 247, 0.25);
+  --theme-bg-gradient: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(236, 72, 153, 0.15));
+  --theme-brand-gradient: linear-gradient(to top right, #c084fc, #ec4899);
+}
+
+[data-theme="emerald"] {
+  --theme-accent: #34d399;
+  --theme-accent-hover: #059669;
+  --theme-edge: #10b981;
+  --theme-glow: rgba(16, 185, 129, 0.25);
+  --theme-bg-gradient: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(13, 148, 136, 0.15));
+  --theme-brand-gradient: linear-gradient(to top right, #34d399, #0d9488);
+}
+
+[data-theme="crimson"] {
+  --theme-accent: #fb7185;
+  --theme-accent-hover: #e11d48;
+  --theme-edge: #f43f5e;
+  --theme-glow: rgba(244, 63, 94, 0.25);
+  --theme-bg-gradient: linear-gradient(135deg, rgba(244, 63, 94, 0.15), rgba(249, 115, 22, 0.15));
+  --theme-brand-gradient: linear-gradient(to top right, #fb7185, #f97316);
+}
+
+/* ===================================================
+   DEEP SURFACES RE-COLORING PER THEME
+   =================================================== */
+
+/* 1. CANDY CRUSH THEME STYLES */
+[data-theme="candy"] body,
+[data-theme="candy"] .bg-slate-950 {
+  background-color: #170426 !important;
+}
+[data-theme="candy"] .bg-slate-900 {
+  background-color: #2b0844 !important;
+  border-color: rgba(236, 72, 153, 0.3) !important;
+}
+[data-theme="candy"] .bg-slate-900\/90,
+[data-theme="candy"] .bg-slate-900\/95,
+[data-theme="candy"] .bg-slate-950\/90,
+[data-theme="candy"] .bg-slate-950\/85 {
+  background-color: rgba(43, 8, 68, 0.92) !important;
+  border-color: rgba(244, 63, 94, 0.35) !important;
+}
+[data-theme="candy"] .border-slate-800 {
+  border-color: rgba(236, 72, 153, 0.22) !important;
+}
+[data-theme="candy"] .border-slate-700 {
+  border-color: rgba(244, 63, 94, 0.35) !important;
+}
+[data-theme="candy"] .text-sky-400,
+[data-theme="candy"] .text-sky-300 {
+  color: #f43f5e !important;
+}
+[data-theme="candy"] .bg-sky-400,
+[data-theme="candy"] .bg-sky-500 {
+  background: linear-gradient(135deg, #f43f5e, #ec4899) !important;
+  color: #ffffff !important;
+}
+[data-theme="candy"] .bg-sky-950,
+[data-theme="candy"] .bg-sky-950\/80 {
+  background-color: #400c5c !important;
+  border-color: rgba(244, 63, 94, 0.45) !important;
+}
+[data-theme="candy"] .text-amber-400,
+[data-theme="candy"] .text-amber-300 {
+  color: #fbbf24 !important;
+}
+[data-theme="candy"] .react-flow__background {
+  background-color: #170426 !important;
+}
+[data-theme="candy"] .react-flow__controls {
+  background-color: #2b0844 !important;
+  border: 1px solid rgba(236, 72, 153, 0.35) !important;
+}
+[data-theme="candy"] .react-flow__controls-button {
+  background-color: #2b0844 !important;
+  border-bottom: 1px solid rgba(236, 72, 153, 0.25) !important;
+  color: #f472b6 !important;
+  fill: #f472b6 !important;
+}
+
+/* 2. IMPERIAL GOLD THEME STYLES */
+[data-theme="gold"] body,
+[data-theme="gold"] .bg-slate-950 {
+  background-color: #0c0a09 !important;
+}
+[data-theme="gold"] .bg-slate-900 {
+  background-color: #1c1917 !important;
+  border-color: rgba(245, 158, 11, 0.25) !important;
+}
+[data-theme="gold"] .bg-slate-900\/90,
+[data-theme="gold"] .bg-slate-900\/95,
+[data-theme="gold"] .bg-slate-950\/90 {
+  background-color: rgba(28, 25, 23, 0.92) !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+}
+[data-theme="gold"] .border-slate-800 {
+  border-color: rgba(245, 158, 11, 0.2) !important;
+}
+[data-theme="gold"] .text-sky-400,
+[data-theme="gold"] .text-sky-300 {
+  color: #fbbf24 !important;
+}
+[data-theme="gold"] .bg-sky-400,
+[data-theme="gold"] .bg-sky-500 {
+  background: linear-gradient(135deg, #fbbf24, #ea580c) !important;
+  color: #0c0a09 !important;
+}
+[data-theme="gold"] .react-flow__background {
+  background-color: #0c0a09 !important;
+}
+
+/* 3. COSMIC NEBULA THEME STYLES */
+[data-theme="nebula"] body,
+[data-theme="nebula"] .bg-slate-950 {
+  background-color: #090317 !important;
+}
+[data-theme="nebula"] .bg-slate-900 {
+  background-color: #160a2c !important;
+  border-color: rgba(168, 85, 247, 0.25) !important;
+}
+[data-theme="nebula"] .bg-slate-900\/90,
+[data-theme="nebula"] .bg-slate-900\/95,
+[data-theme="nebula"] .bg-slate-950\/90 {
+  background-color: rgba(22, 10, 44, 0.92) !important;
+  border-color: rgba(192, 132, 252, 0.35) !important;
+}
+[data-theme="nebula"] .border-slate-800 {
+  border-color: rgba(168, 85, 247, 0.2) !important;
+}
+[data-theme="nebula"] .text-sky-400,
+[data-theme="nebula"] .text-sky-300 {
+  color: #c084fc !important;
+}
+[data-theme="nebula"] .bg-sky-400,
+[data-theme="nebula"] .bg-sky-500 {
+  background: linear-gradient(135deg, #c084fc, #ec4899) !important;
+  color: #ffffff !important;
+}
+[data-theme="nebula"] .react-flow__background {
+  background-color: #090317 !important;
+}
+
+/* 4. BIOMETRIC SOLARPUNK THEME STYLES */
+[data-theme="emerald"] body,
+[data-theme="emerald"] .bg-slate-950 {
+  background-color: #02120d !important;
+}
+[data-theme="emerald"] .bg-slate-900 {
+  background-color: #05241b !important;
+  border-color: rgba(16, 185, 129, 0.25) !important;
+}
+[data-theme="emerald"] .bg-slate-900\/90,
+[data-theme="emerald"] .bg-slate-900\/95,
+[data-theme="emerald"] .bg-slate-950\/90 {
+  background-color: rgba(5, 36, 27, 0.92) !important;
+  border-color: rgba(52, 211, 153, 0.35) !important;
+}
+[data-theme="emerald"] .border-slate-800 {
+  border-color: rgba(16, 185, 129, 0.2) !important;
+}
+[data-theme="emerald"] .text-sky-400,
+[data-theme="emerald"] .text-sky-300 {
+  color: #34d399 !important;
+}
+[data-theme="emerald"] .bg-sky-400,
+[data-theme="emerald"] .bg-sky-500 {
+  background: linear-gradient(135deg, #34d399, #0d9488) !important;
+  color: #02120d !important;
+}
+[data-theme="emerald"] .react-flow__background {
+  background-color: #02120d !important;
+}
+
+/* 5. TACTICAL CRIMSON THEME STYLES */
+[data-theme="crimson"] body,
+[data-theme="crimson"] .bg-slate-950 {
+  background-color: #0b0507 !important;
+}
+[data-theme="crimson"] .bg-slate-900 {
+  background-color: #1b0a10 !important;
+  border-color: rgba(244, 63, 94, 0.25) !important;
+}
+[data-theme="crimson"] .bg-slate-900\/90,
+[data-theme="crimson"] .bg-slate-900\/95,
+[data-theme="crimson"] .bg-slate-950\/90 {
+  background-color: rgba(27, 10, 16, 0.92) !important;
+  border-color: rgba(251, 113, 133, 0.35) !important;
+}
+[data-theme="crimson"] .border-slate-800 {
+  border-color: rgba(244, 63, 94, 0.2) !important;
+}
+[data-theme="crimson"] .text-sky-400,
+[data-theme="crimson"] .text-sky-300 {
+  color: #fb7185 !important;
+}
+[data-theme="crimson"] .bg-sky-400,
+[data-theme="crimson"] .bg-sky-500 {
+  background: linear-gradient(135deg, #fb7185, #f97316) !important;
+  color: #ffffff !important;
+}
+[data-theme="crimson"] .react-flow__background {
+  background-color: #0b0507 !important;
+}
+
+/* ===================================================
+   ANIMATION KEYFRAMES (CANDY FLOAT & AMBIENT SPARKLES)
+   =================================================== */
+
+@keyframes candyFloat {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(0.8);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.55;
+  }
+  85% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: translateY(-115vh) rotate(360deg) scale(1.1);
+    opacity: 0;
+  }
+}
+
+@keyframes candyBubble {
+  0% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(-55vh) translateX(18px) scale(1.05);
+  }
+  85% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-115vh) translateX(-18px) scale(0.9);
+    opacity: 0;
+  }
+}
+
+@keyframes floatSparkle {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.6;
+  }
+  80% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-115vh);
+    opacity: 0;
+  }
+}
+
+.animate-candy-float {
+  animation: candyFloat 16s ease-in-out infinite;
+}
+
+.animate-candy-bubble {
+  animation: candyBubble 18s ease-in-out infinite;
+}
+
+.animate-float-sparkle {
+  animation: floatSparkle 16s linear infinite;
+}
+
 @layer base {
   body {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     background-color: #020617;
     color: #f8fafc;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
   h1, h2, h3, h4, .font-display {
     font-family: 'Outfit', sans-serif;
@@ -15,7 +326,10 @@
   }
 }
 
-/* Custom React Flow Dark Canvas overrides */
+.brand-badge {
+  background: var(--theme-brand-gradient);
+}
+
 .react-flow__background {
   background-color: #020617 !important;
 }
@@ -46,7 +360,7 @@
 }
 
 .react-flow__edge.animated .react-flow__edge-path {
-  stroke: #0ea5e9 !important;
+  stroke: var(--theme-edge, #0ea5e9) !important;
   stroke-width: 2.5 !important;
   stroke-dasharray: 6 !important;
   animation: flowEdge 1s linear infinite !important;
@@ -61,7 +375,6 @@
   }
 }
 
-/* Glassmorphism subtle surface */
 .surface-card {
   background-color: rgba(15, 23, 42, 0.75);
   backdrop-filter: blur(12px);
@@ -69,6 +382,6 @@
 }
 
 .surface-card-hover:hover {
-  border-color: rgba(14, 165, 233, 0.5);
-  box-shadow: 0 0 25px -5px rgba(14, 165, 233, 0.15);
+  border-color: var(--theme-accent, rgba(14, 165, 233, 0.5));
+  box-shadow: 0 0 25px -5px var(--theme-glow, rgba(14, 165, 233, 0.15));
 }

@@ -29,6 +29,8 @@ import {
   type SavedAccount,
 } from '../services/api';
 import type { User, CareerDNA, CareerWorldData } from '../types/career';
+import { ThemeDropdown } from './ThemeDropdown';
+import { AnimatedBackground } from './AnimatedBackground';
 
 interface LoginPageProps {
   onAuthSuccess: (user: User, profile: CareerDNA, roadmap: CareerWorldData) => void;
@@ -208,10 +210,7 @@ export function LoginPage({ onAuthSuccess }: LoginPageProps) {
 
   return (
     <div className="min-h-screen w-full bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-amber-500/30 selection:text-amber-200 relative overflow-hidden">
-      {/* Background Ambient Glows */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-sky-600/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute top-1/2 right-10 w-72 h-72 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
+      <AnimatedBackground />
 
       {/* Top Simple Bar */}
       <header className="w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between z-10">
@@ -229,16 +228,20 @@ export function LoginPage({ onAuthSuccess }: LoginPageProps) {
           </div>
         </div>
 
-        {savedAccounts.length > 0 && (
-          <button
-            onClick={() => handleQuickAccountLogin(savedAccounts[0])}
-            disabled={loading}
-            className="text-xs font-mono text-slate-300 hover:text-amber-300 flex items-center gap-1.5 transition-colors px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>Continue as {savedAccounts[0].name.split(' ')[0]}</span>
-          </button>
-        )}
+        <div className="flex items-center gap-3">
+          <ThemeDropdown />
+
+          {savedAccounts.length > 0 && (
+            <button
+              onClick={() => handleQuickAccountLogin(savedAccounts[0])}
+              disabled={loading}
+              className="text-xs font-mono text-slate-300 hover:text-amber-300 flex items-center gap-1.5 transition-colors px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span>Continue as {savedAccounts[0].name.split(' ')[0]}</span>
+            </button>
+          )}
+        </div>
       </header>
 
       {/* Main Dual-Column Content */}
