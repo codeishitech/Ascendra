@@ -13,8 +13,6 @@ import { MentorConnectView } from './components/MentorConnectView';
 import { AuthModal } from './components/AuthModal';
 import { LoginPage } from './components/LoginPage';
 import { AnimatedBackground } from './components/AnimatedBackground';
-import { JudgeTourBanner } from './components/JudgeTourBanner';
-import { JudgeDeckModal } from './components/JudgeDeckModal';
 import { SpidermanThemeHUD } from './components/SpidermanThemeHUD';
 import { api, getStoredUser, clearStoredAuth } from './services/api';
 import { applyTheme, getStoredTheme, type ThemeId } from './services/theme';
@@ -44,8 +42,6 @@ import {
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(getStoredUser());
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [showJudgeDeck, setShowJudgeDeck] = useState(false);
-  const [judgeStep, setJudgeStep] = useState(1);
 
   const [profile, setProfile] = useState<CareerDNA | null>(null);
   const [roadmap, setRoadmap] = useState<CareerWorldData | null>(null);
@@ -155,66 +151,6 @@ export default function App() {
     setInventory(updatedInv);
   };
 
-  // Live Demo action: Simulate completing an available quest with fanfare!
-  const handleSimulateQuestWin = async () => {
-    if (!roadmap) return;
-    const targetNode = roadmap.nodes.find((n) => n.status === 'available') || roadmap.nodes[0];
-    if (!targetNode) return;
-
-    try {
-      const res = await api.completeQuest(targetNode.id, {
-        evidenceUrl: 'https://github.com/alex-vance/pytorch-custom-cuda-ops',
-        note: 'Optimized focal loss with CUDA kernel and verified gradcheck numerical precision (eps=1e-6).',
-        rubricScores: { r1: 95, r2: 90, r3: 95 },
-        verificationType: 'project_evidence',
-      });
-
-      try {
-        confetti({
-          particleCount: 100,
-          spread: 80,
-          origin: { y: 0.5 },
-          colors: ['#38bdf8', '#f59e0b', '#10b981'],
-        });
-      } catch (e) {}
-
-      loadData();
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  // Live Demo action: Simulate adaptive replanning
-  const handleSimulateAdaptiveReplanning = async () => {
-    if (!roadmap) return;
-    const uncompletedNode = roadmap.nodes.find((n) => n.status !== 'completed' && n.category !== 'boss_battle') || roadmap.nodes[0];
-    if (!uncompletedNode) return;
-
-    await handleMarkKnownConfirm(
-      uncompletedNode.id,
-      'Verified via prior academic coursework and production internship.'
-    );
-  };
-
-  // Handle Step selection from Judge Tour
-  const handleSelectJudgeStep = (stepNumber: number) => {
-    setJudgeStep(stepNumber);
-    if (stepNumber === 1) {
-      setShowOnboarding(true);
-    } else if (stepNumber === 2) {
-      setActiveTab('world');
-    } else if (stepNumber === 3) {
-      setActiveTab('world');
-      // trigger mark known on first available node
-      const nodeToTest = roadmap?.nodes.find((n) => n.status === 'available');
-      if (nodeToTest) setSelectedMarkKnownNode(nodeToTest);
-    } else if (stepNumber === 4) {
-      setActiveTab('boss');
-    } else if (stepNumber === 5) {
-      setActiveTab('mentors');
-    }
-  };
-
   // Handle generation from Onboarding
   const handleSaveAndGenerate = async (params: {
     targetRole: string;
@@ -273,21 +209,11 @@ export default function App() {
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col antialiased relative">
       <AnimatedBackground />
 
-      {/* Judge Pitch Tour & Live Presentation Shortcuts */}
-      <JudgeTourBanner
-        currentStep={judgeStep}
-        onSelectStep={handleSelectJudgeStep}
-        onOpenDeck={() => setShowJudgeDeck(true)}
-        onSimulateQuestWin={handleSimulateQuestWin}
-        onSimulateAdaptiveReplanning={handleSimulateAdaptiveReplanning}
-      />
-
       {/* Top Bar (adheres to Top Bar Contract) */}
       <Header
         activeTab={activeTab}
         onTabChange={setActiveTab}
         onOpenOnboarding={() => setShowOnboarding(true)}
-        onOpenJudgeDeck={() => setShowJudgeDeck(true)}
         currentUser={currentUser}
         onOpenAuth={() => setShowAuthModal(true)}
         onLogout={handleLogout}
@@ -411,14 +337,7 @@ export default function App() {
             <span>·</span>
             <span>Forge your skills. Unlock your future.</span>
           </div>
-          <div className="flex items-center gap-4 text-slate-400">
-            <button
-              onClick={() => setShowJudgeDeck(true)}
-              className="text-amber-400 hover:underline font-semibold"
-            >
-              3-Minute Judge Pitch Deck
-            </button>
-            <span>·</span>
+          <div className="text-slate-400">
             <span>Powered by Gemini 3.8 Flash & Deterministic Graph Logic</span>
           </div>
         </div>
@@ -456,13 +375,6 @@ export default function App() {
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         onAuthSuccess={handleAuthSuccess}
-      />
-
-      {/* Judge Pitch Deck & Demo Script Modal */}
-      <JudgeDeckModal
-        isOpen={showJudgeDeck}
-        onClose={() => setShowJudgeDeck(false)}
-        onSelectStep={handleSelectJudgeStep}
       />
     </div>
   );

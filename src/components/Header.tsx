@@ -1,4 +1,4 @@
-import { Compass, Swords, Users, ShieldCheck, LogIn, LogOut, Sparkles, Trophy } from 'lucide-react';
+import { Compass, Swords, Users, ShieldCheck, LogIn, LogOut, Sparkles } from 'lucide-react';
 import type { User } from '../types/career';
 import { ThemeDropdown } from './ThemeDropdown';
 
@@ -6,7 +6,6 @@ interface HeaderProps {
   activeTab: 'world' | 'boss' | 'mentors' | 'passport';
   onTabChange: (tab: 'world' | 'boss' | 'mentors' | 'passport') => void;
   onOpenOnboarding: () => void;
-  onOpenJudgeDeck: () => void;
   currentUser: User | null;
   onOpenAuth: () => void;
   onLogout: () => void;
@@ -16,7 +15,6 @@ export function Header({
   activeTab,
   onTabChange,
   onOpenOnboarding,
-  onOpenJudgeDeck,
   currentUser,
   onOpenAuth,
   onLogout,
@@ -89,14 +87,6 @@ export function Header({
         {/* Zone 3: 1 primary action or authenticated user account controls */}
         <div className="flex items-center gap-3 shrink-0">
           <ThemeDropdown />
-
-          <button
-            onClick={onOpenJudgeDeck}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap"
-          >
-            <Trophy className="w-3.5 h-3.5 text-amber-400" />
-            <span>Judge Pitch Deck</span>
-          </button>
 
           {currentUser ? (
             <div className="flex items-center gap-2">

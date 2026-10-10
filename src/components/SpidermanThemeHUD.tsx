@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import confetti from 'canvas-confetti';
 import {
   Zap,
@@ -9,6 +10,7 @@ import {
   Cpu,
   Compass,
   Volume2,
+  ArrowLeft,
 } from 'lucide-react';
 import { THEME_OPTIONS } from '../services/theme';
 
@@ -16,6 +18,26 @@ export function SpidermanThemeHUD() {
   const [selectedAcronym, setSelectedAcronym] = useState<string | null>(null);
   const [showDossierModal, setShowDossierModal] = useState(false);
   const [lastThwip, setLastThwip] = useState<string | null>(null);
+
+  // Close modal on Escape key and lock body scroll
+  useEffect(() => {
+    if (!showDossierModal) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowDossierModal(false);
+      }
+    };
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showDossierModal]);
 
   const spideyTheme = THEME_OPTIONS.find((t) => t.id === 'spiderman');
   if (!spideyTheme || !spideyTheme.acronyms) return null;
@@ -171,32 +193,55 @@ export function SpidermanThemeHUD() {
         </div>
       )}
 
-      {/* Full Spider-Man Dossier Modal */}
-      {showDossierModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-2xl bg-slate-900 border border-red-500/40 rounded-3xl shadow-2xl overflow-hidden p-6 max-h-[90vh] flex flex-col">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-red-600 to-blue-600 flex items-center justify-center text-xl shadow-lg shadow-red-500/20">
+      {/* Full Spider-Man Dossier Modal (Portaled to document.body for full visibility) */}
+      {showDossierModal && typeof document !== 'undefined' && createPortal(
+        <div
+          className="fixed inset-0 z-[999] flex items-center justify-center p-4 sm:p-6 bg-slate-950/85 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowDossierModal(false);
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Spider-Man Theme Dossier"
+        >
+          <div
+            className="relative w-full max-w-2xl bg-slate-900 border border-red-500/40 rounded-3xl shadow-2xl overflow-hidden p-6 max-h-[88vh] flex flex-col z-[1000]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header with Prominent Go Back and Close options */}
+            <div className="flex items-center justify-between pb-4 border-b border-slate-800 shrink-0 gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <button
+                  type="button"
+                  onClick={() => setShowDossierModal(false)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold transition-all shrink-0 active:scale-95 shadow-sm"
+                  title="Return to Career World"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5 text-red-400" />
+                  <span>Go Back</span>
+                </button>
+
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-red-600 to-blue-600 flex items-center justify-center text-lg shadow-md shadow-red-500/20 shrink-0">
                   🕷️
                 </div>
-                <div>
-                  <h3 className="text-lg font-bold text-white font-display flex items-center gap-2">
-                    Spider-Man Theme Dossier
-                    <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30">
+                <div className="min-w-0">
+                  <h3 className="text-base sm:text-lg font-bold text-white font-display flex items-center gap-2 truncate">
+                    <span>Spider-Man Dossier</span>
+                    <span className="hidden sm:inline-block text-[10px] font-mono px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30">
                       Acronyms & Annotations
                     </span>
                   </h3>
-                  <p className="text-xs text-slate-400">
-                    Tactical breakdown of Peter Parker & Miles Morales specifications in Ascendra
+                  <p className="text-[11px] text-slate-400 truncate">
+                    Tactical specifications & Parker Principle directives
                   </p>
                 </div>
               </div>
+
               <button
                 type="button"
                 onClick={() => setShowDossierModal(false)}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors shrink-0"
+                title="Close modal (Esc)"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -274,25 +319,27 @@ export function SpidermanThemeHUD() {
               </div>
             </div>
 
-            {/* Modal Footer */}
-            <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
+            {/* Modal Footer with Go Back option */}
+            <div className="pt-4 border-t border-slate-800 flex items-center justify-between shrink-0 gap-3">
               <button
                 type="button"
                 onClick={handleThwip}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-bold transition-all"
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-red-600/30 active:scale-95"
               >
                 <span>🕸️ Test Web-Shooter</span>
               </button>
               <button
                 type="button"
                 onClick={() => setShowDossierModal(false)}
-                className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 rounded-xl text-xs font-semibold transition-all shadow-xs active:scale-95"
               >
-                Close Dossier
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Go Back to World</span>
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
