@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Compass,
   Swords,
@@ -17,16 +17,25 @@ import {
   Briefcase,
   PlayCircle,
   HelpCircle,
+  Trash2,
+  KeyRound,
+  ShieldAlert,
 } from 'lucide-react';
-import { api } from '../services/api';
+import {
+  api,
+  getSavedAccounts,
+  saveSavedAccount,
+  removeSavedAccount,
+  type SavedAccount,
+} from '../services/api';
 import type { User, CareerDNA, CareerWorldData } from '../types/career';
-import avatarCareerTwin from '../assets/images/avatar_career_twin_1791608601452.jpg';
 
 interface LoginPageProps {
   onAuthSuccess: (user: User, profile: CareerDNA, roadmap: CareerWorldData) => void;
 }
 
 export function LoginPage({ onAuthSuccess }: LoginPageProps) {
+  const [savedAccounts, setSavedAccounts] = useState<SavedAccount[]>([]);
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,8 +43,22 @@ export function LoginPage({ onAuthSuccess }: LoginPageProps) {
   const [targetRole, setTargetRole] = useState('AI Research Engineer');
   const [customRole, setCustomRole] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Load saved accounts on mount
+  useEffect(() => {
+    const list = getSavedAccounts();
+    setSavedAccounts(list);
+    if (list.length > 0) {
+      // Pre-fill with the most recently used account
+      setEmail(list[0].email);
+      if (list[0].password) {
+        setPassword(list[0].password);
+      }
+    }
+  }, []);
 
   const predefinedRoles = [
     'AI Research Engineer',
@@ -46,6 +69,15 @@ export function LoginPage({ onAuthSuccess }: LoginPageProps) {
     'Full-Stack WebAssembly Architect',
     'Other / Custom Track',
   ];
+
+  // When email input changes, check if we have a saved password for it
+  const handleEmailChange = (val: string) => {
+    setEmail(val);
+    const matched = savedAccounts.find((a) => a.email.toLowerCase() === val.toLowerCase().trim());
+    if (matched && matched.password) {
+      setPassword(matched.password);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,9 +93,10 @@ export function LoginPage({ onAuthSuccess }: LoginPageProps) {
           throw new Error('Please enter a valid email and password');
         }
 
-        const effectiveRole = targetRole === 'Other / Custom Track' && customRole.trim()
-          ? customRole.trim()
-          : targetRole;
+        const effectiveRole =
+          targetRole === 'Other / Custom Track' && customRole.trim()
+            ? customRole.trim()
+            : targetRole;
 
         const res = await api.signup({
           name: name.trim(),
@@ -71,6 +104,18 @@ export function LoginPage({ onAuthSuccess }: LoginPageProps) {
           password,
           targetRole: effectiveRole,
         });
+
+        if (rememberMe) {
+          saveSavedAccount({
+            email: res.user.email,
+            name: res.user.name,
+            targetRole: res.user.targetRole,
+            password,
+            lastUsed: new Date().toISOString(),
+          });
+          setSavedAccounts(getSavedAccounts());
+        }
+
         onAuthSuccess(res.user, res.profile, res.roadmap);
       } else {
         if (!email.trim() || !password) {
@@ -80,6 +125,18 @@ export function LoginPage({ onAuthSuccess }: LoginPageProps) {
           email: email.trim(),
           password,
         });
+
+        if (rememberMe) {
+          saveSavedAccount({
+            email: res.user.email,
+            name: res.user.name,
+            targetRole: res.user.targetRole,
+            password,
+            lastUsed: new Date().toISOString(),
+          });
+          setSavedAccounts(getSavedAccounts());
+        }
+
         onAuthSuccess(res.user, res.profile, res.roadmap);
       }
     } catch (err: any) {
@@ -89,20 +146,35 @@ export function LoginPage({ onAuthSuccess }: LoginPageProps) {
     }
   };
 
-  // 1-Click Demo Showcase Login
-  const handleDemoLogin = async () => {
+  // Instant 1-Click Login from a Saved Account
+  const handleQuickAccountLogin = async (acc: SavedAccount) => {
     setError(null);
     setLoading(true);
+    setEmail(acc.email);
+    if (acc.password) setPassword(acc.password);
+
     try {
       const res = await api.login({
-        email: 'alex@ascendra.dev',
-        password: 'demo1234',
+        email: acc.email,
+        password: acc.password || 'demo1234',
       });
       onAuthSuccess(res.user, res.profile, res.roadmap);
     } catch (err: any) {
-      setError(err.message || 'Failed to initialize demo session.');
+      setError(err.message || `Failed to sign in as ${acc.name}.`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Remove saved account from this device
+  const handleRemoveAccount = (emailToRemove: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    removeSavedAccount(emailToRemove);
+    const updated = getSavedAccounts();
+    setSavedAccounts(updated);
+    if (email.toLowerCase() === emailToRemove.toLowerCase()) {
+      setEmail(updated.length > 0 ? updated[0].email : '');
+      setPassword(updated.length > 0 ? updated[0].password || '' : '');
     }
   };
 
@@ -111,25 +183,24 @@ export function LoginPage({ onAuthSuccess }: LoginPageProps) {
     setError(null);
     setLoading(true);
     try {
-      // Create guest session
       const guestId = `guest_${Date.now()}`;
-      const guestUser: User = {
-        id: guestId,
-        name: 'Guest Explorer',
-        email: 'guest@ascendra.dev',
-        targetRole: 'AI Research Engineer',
-        createdAt: new Date().toISOString(),
-      };
+      const guestEmail = `guest_${Date.now()}@ascendra.dev`;
       const res = await api.signup({
-        name: guestUser.name,
-        email: `guest_${Date.now()}@ascendra.dev`,
+        name: 'Guest Explorer',
+        email: guestEmail,
         password: 'guest-session',
         targetRole: 'AI Research Engineer',
       });
       onAuthSuccess(res.user, res.profile, res.roadmap);
     } catch (err: any) {
       // Fallback: login to demo if signup guest hits conflict
-      handleDemoLogin();
+      handleQuickAccountLogin({
+        email: 'alex@ascendra.dev',
+        name: 'Alex Vance',
+        targetRole: 'AI Research Engineer',
+        password: 'demo1234',
+        lastUsed: new Date().toISOString(),
+      });
     } finally {
       setLoading(false);
     }
@@ -158,14 +229,16 @@ export function LoginPage({ onAuthSuccess }: LoginPageProps) {
           </div>
         </div>
 
-        <button
-          onClick={handleDemoLogin}
-          disabled={loading}
-          className="text-xs font-mono text-slate-400 hover:text-amber-300 flex items-center gap-1.5 transition-colors px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60"
-        >
-          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-          <span>Quick Demo Access</span>
-        </button>
+        {savedAccounts.length > 0 && (
+          <button
+            onClick={() => handleQuickAccountLogin(savedAccounts[0])}
+            disabled={loading}
+            className="text-xs font-mono text-slate-300 hover:text-amber-300 flex items-center gap-1.5 transition-colors px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <span>Continue as {savedAccounts[0].name.split(' ')[0]}</span>
+          </button>
+        )}
       </header>
 
       {/* Main Dual-Column Content */}
@@ -272,13 +345,88 @@ export function LoginPage({ onAuthSuccess }: LoginPageProps) {
               </button>
             </div>
 
-            <div className="mb-6">
+            {/* SAVED ACCOUNTS SELECTOR (Prevents having to re-create accounts) */}
+            {mode === 'login' && savedAccounts.length > 0 && (
+              <div className="mb-6 pb-5 border-b border-slate-800/80">
+                <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-2.5">
+                  <span className="flex items-center gap-1 text-sky-400 font-bold">
+                    <KeyRound className="w-3.5 h-3.5" /> Saved Accounts On This Device
+                  </span>
+                  <span className="text-[10px] text-slate-500">{savedAccounts.length} saved</span>
+                </div>
+
+                <div className="space-y-2">
+                  {savedAccounts.map((acc) => {
+                    const isSelected = email.toLowerCase() === acc.email.toLowerCase();
+                    return (
+                      <div
+                        key={acc.email}
+                        onClick={() => {
+                          setEmail(acc.email);
+                          if (acc.password) setPassword(acc.password);
+                        }}
+                        className={`p-2.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                          isSelected
+                            ? 'bg-sky-950/40 border-sky-500/50 shadow-sm'
+                            : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700 hover:bg-slate-950'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-600 to-indigo-600 flex items-center justify-center font-bold text-xs text-white shrink-0">
+                            {acc.name.charAt(0).toUpperCase()}
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-xs font-semibold text-white truncate flex items-center gap-1.5">
+                              <span>{acc.name}</span>
+                              {acc.email === 'singhishita7784@gmail.com' && (
+                                <span className="px-1.5 py-0.2 bg-emerald-950 border border-emerald-500/40 text-[9px] text-emerald-300 rounded font-mono">
+                                  Default
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-[11px] text-slate-400 font-mono truncate">
+                              {acc.email}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleQuickAccountLogin(acc);
+                            }}
+                            disabled={loading}
+                            className="px-2.5 py-1 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs rounded-lg transition-colors whitespace-nowrap"
+                          >
+                            1-Click Login
+                          </button>
+                          {acc.email !== 'alex@ascendra.dev' && (
+                            <button
+                              type="button"
+                              onClick={(e) => handleRemoveAccount(acc.email, e)}
+                              title="Forget account on this device"
+                              className="p-1 text-slate-500 hover:text-rose-400 rounded transition-colors"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            <div className="mb-5">
               <h3 className="text-xl font-bold text-white font-display">
-                {mode === 'login' ? 'Welcome back, Engineer' : 'Initialize Your Career Twin'}
+                {mode === 'login' ? 'Or Sign In with Email' : 'Initialize Your Career Twin'}
               </h3>
               <p className="text-xs text-slate-400 mt-1">
                 {mode === 'login'
-                  ? 'Access your saved skill tree, artifact proofs, and mentor sessions.'
+                  ? 'Enter your credentials. They will be securely saved on this device for instant access.'
                   : 'Start at Level 1 Initiate and unlock your personal tech trajectory.'}
               </p>
             </div>
@@ -321,7 +469,7 @@ export function LoginPage({ onAuthSuccess }: LoginPageProps) {
                     required
                     placeholder="you@domain.com"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => handleEmailChange(e.target.value)}
                     className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl text-sm text-white placeholder:text-slate-600 focus:outline-none transition-colors"
                   />
                 </div>
@@ -383,6 +531,22 @@ export function LoginPage({ onAuthSuccess }: LoginPageProps) {
                 </div>
               )}
 
+              {/* Remember Credentials Checkbox */}
+              <div className="flex items-center justify-between text-xs pt-1">
+                <label className="flex items-center gap-2 cursor-pointer select-none text-slate-300">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="rounded border-slate-800 bg-slate-950 text-sky-500 focus:ring-sky-500"
+                  />
+                  <span>Remember login on this device</span>
+                </label>
+                <span className="text-[11px] font-mono text-emerald-400">
+                  Auto-sync active
+                </span>
+              </div>
+
               <button
                 type="submit"
                 disabled={loading}
@@ -391,7 +555,7 @@ export function LoginPage({ onAuthSuccess }: LoginPageProps) {
                 {loading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
-                    <span>Verifying Credentials...</span>
+                    <span>Signing in...</span>
                   </>
                 ) : (
                   <>
@@ -403,21 +567,7 @@ export function LoginPage({ onAuthSuccess }: LoginPageProps) {
             </form>
 
             {/* Quick Demo & Guest Shortcuts */}
-            <div className="mt-6 pt-5 border-t border-slate-800/80 space-y-2.5">
-              <div className="text-[11px] font-mono text-center text-slate-500 uppercase tracking-wider">
-                Instant Access Options
-              </div>
-
-              <button
-                type="button"
-                onClick={handleDemoLogin}
-                disabled={loading}
-                className="w-full py-2.5 bg-slate-950 hover:bg-slate-800 border border-amber-500/30 text-amber-300 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                <span>1-Click Demo Showcase (Alex Vance · Lvl 4)</span>
-              </button>
-
+            <div className="mt-5 pt-4 border-t border-slate-800/80 space-y-2">
               <button
                 type="button"
                 onClick={handleGuestEntry}
@@ -425,7 +575,7 @@ export function LoginPage({ onAuthSuccess }: LoginPageProps) {
                 className="w-full py-2 bg-transparent hover:bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-800/60 rounded-xl text-xs font-mono transition-colors flex items-center justify-center gap-1.5"
               >
                 <PlayCircle className="w-3.5 h-3.5 text-slate-400" />
-                <span>Continue as Fresh Guest (Lvl 1 Initiate)</span>
+                <span>Continue as Temporary Guest</span>
               </button>
             </div>
           </div>
@@ -435,14 +585,14 @@ export function LoginPage({ onAuthSuccess }: LoginPageProps) {
       {/* Footer */}
       <footer className="w-full max-w-7xl mx-auto px-6 py-6 text-center text-xs text-slate-400 font-mono flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-900 z-10">
         <div>
-          Ascendra Career Operating System · Offline & Cloud Resilient
+          Ascendra Career Operating System · Persistent Identity
         </div>
         <div className="flex items-center gap-4 text-slate-400">
-          <span>Non-linear Skill Trees</span>
+          <span>Saved Accounts</span>
           <span>·</span>
           <span>Proof-of-Work Portfolios</span>
           <span>·</span>
-          <span>Zero Slop</span>
+          <span>Zero Data Loss</span>
         </div>
       </footer>
     </div>

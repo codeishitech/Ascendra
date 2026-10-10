@@ -642,27 +642,119 @@ function createNewUserState(targetRole: string = 'AI Research Engineer'): LocalU
   };
 }
 
+export interface SavedAccount {
+  email: string;
+  name: string;
+  targetRole: string;
+  password?: string;
+  lastUsed: string;
+}
+
+const SAVED_ACCOUNTS_KEY = 'ascendra_saved_accounts_v2';
+
+export function getSavedAccounts(): SavedAccount[] {
+  try {
+    const raw = localStorage.getItem(SAVED_ACCOUNTS_KEY);
+    if (raw) {
+      const list = JSON.parse(raw);
+      if (Array.isArray(list) && list.length > 0) return list;
+    }
+  } catch (e) {}
+
+  // Initial persistent defaults
+  return [
+    {
+      email: 'singhishita7784@gmail.com',
+      name: 'Ishita Sharma',
+      targetRole: 'AI Research Engineer',
+      password: 'ishitaa',
+      lastUsed: new Date().toISOString(),
+    },
+    {
+      email: 'alex@ascendra.dev',
+      name: 'Alex Vance (Demo Lvl 4)',
+      targetRole: 'AI Research Engineer',
+      password: 'demo1234',
+      lastUsed: new Date(Date.now() - 86400000).toISOString(),
+    },
+  ];
+}
+
+export function saveSavedAccount(account: SavedAccount) {
+  try {
+    const current = getSavedAccounts().filter(
+      (a) => a.email.toLowerCase() !== account.email.toLowerCase().trim()
+    );
+    current.unshift({
+      ...account,
+      email: account.email.toLowerCase().trim(),
+      lastUsed: new Date().toISOString(),
+    });
+    localStorage.setItem(SAVED_ACCOUNTS_KEY, JSON.stringify(current));
+  } catch (e) {}
+}
+
+export function removeSavedAccount(email: string) {
+  try {
+    const current = getSavedAccounts().filter(
+      (a) => a.email.toLowerCase() !== email.toLowerCase().trim()
+    );
+    localStorage.setItem(SAVED_ACCOUNTS_KEY, JSON.stringify(current));
+  } catch (e) {}
+}
+
 function loadLocalDb(): LocalDatabase {
+  let db: LocalDatabase | null = null;
   try {
     const raw = localStorage.getItem(LOCAL_DB_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (parsed.defaultState && parsed.userStates) {
-        return parsed;
+      if (parsed && parsed.defaultState && parsed.userStates) {
+        db = parsed as LocalDatabase;
+        if (db && !db.users) {
+          db.users = [];
+        }
       }
     }
   } catch (e) {}
 
-  const defaultState = createDefaultState();
-  const db: LocalDatabase = {
-    users: [{ ...DEMO_USER, passwordHash: 'demo1234' }],
-    userStates: {
-      [DEMO_USER.id]: defaultState,
-    },
-    defaultState,
-    mentors: SEED_MENTORS,
-    messages: INITIAL_MESSAGES,
-  };
+  if (!db) {
+    const defaultState = createDefaultState();
+    db = {
+      users: [],
+      userStates: {
+        [DEMO_USER.id]: defaultState,
+      },
+      defaultState,
+      mentors: SEED_MENTORS,
+      messages: INITIAL_MESSAGES,
+    };
+  }
+
+  // Ensure Alex Vance demo account is present
+  if (!db.users.some((u) => u.email.toLowerCase() === DEMO_USER.email.toLowerCase())) {
+    db.users.push({ ...DEMO_USER, passwordHash: 'demo1234' });
+    if (!db.userStates[DEMO_USER.id]) {
+      db.userStates[DEMO_USER.id] = createDefaultState();
+    }
+  }
+
+  // Ensure Ishita Sharma account is present
+  if (!db.users.some((u) => u.email.toLowerCase() === 'singhishita7784@gmail.com')) {
+    const ishitaId = 'usr_ishita_default';
+    db.users.push({
+      id: ishitaId,
+      email: 'singhishita7784@gmail.com',
+      name: 'Ishita Sharma',
+      targetRole: 'AI Research Engineer',
+      passwordHash: 'ishitaa',
+      createdAt: '2026-10-10T07:52:23.897Z',
+    });
+    if (!db.userStates[ishitaId]) {
+      db.userStates[ishitaId] = createNewUserState('AI Research Engineer');
+    }
+  }
+
   saveLocalDb(db);
   return db;
 }
@@ -756,6 +848,9 @@ async function requestWithFallback<T>(url: string, options?: RequestInit): Promi
 export const api = {
   // Authentication
   async signup(data: { email: string; password: string; name: string; targetRole?: string }): Promise<AuthResponse> {
+    const db = loadLocalDb();
+    let authRes: AuthResponse | null = null;
+
     const serverResult = await requestWithFallback<AuthResponse>('/api/auth/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -763,49 +858,82 @@ export const api = {
     });
 
     if (serverResult) {
-      setStoredAuth(serverResult.token, serverResult.user);
-      return serverResult;
+      authRes = serverResult;
+    } else {
+      // Client-side fallback
+      const existing = db.users.find((u) => u.email.toLowerCase() === data.email.toLowerCase().trim());
+      if (existing) {
+        throw new Error('An account with this email already exists');
+      }
+
+      const userId = `usr_${Date.now()}`;
+      const newUser: User & { passwordHash?: string } = {
+        id: userId,
+        email: data.email.toLowerCase().trim(),
+        name: data.name.trim(),
+        targetRole: data.targetRole || 'AI Research Engineer',
+        createdAt: new Date().toISOString(),
+        passwordHash: data.password,
+      };
+      db.users.push(newUser);
+
+      const userState = createNewUserState(newUser.targetRole);
+      db.userStates[userId] = userState;
+      saveLocalDb(db);
+
+      authRes = {
+        user: {
+          id: newUser.id,
+          email: newUser.email,
+          name: newUser.name,
+          targetRole: newUser.targetRole,
+          createdAt: newUser.createdAt,
+        },
+        token: newUser.id,
+        profile: userState.profile,
+        roadmap: userState.roadmap,
+      };
     }
 
-    // Client-side fallback
-    const db = loadLocalDb();
-    const existing = db.users.find((u) => u.email.toLowerCase() === data.email.toLowerCase().trim());
-    if (existing) {
-      throw new Error('An account with this email already exists');
+    // Always guarantee user exists in local DB with passwordHash
+    const existingIndex = db.users.findIndex((u) => u.email.toLowerCase() === authRes!.user.email.toLowerCase());
+    if (existingIndex >= 0) {
+      db.users[existingIndex].passwordHash = data.password;
+    } else {
+      db.users.push({
+        ...authRes!.user,
+        passwordHash: data.password,
+      });
     }
 
-    const userId = `usr_${Date.now()}`;
-    const newUser: User & { passwordHash?: string } = {
-      id: userId,
-      email: data.email.toLowerCase().trim(),
-      name: data.name.trim(),
-      targetRole: data.targetRole || 'AI Research Engineer',
-      createdAt: new Date().toISOString(),
-      passwordHash: data.password,
-    };
-    db.users.push(newUser);
-
-    const userState = createNewUserState(newUser.targetRole);
-    db.userStates[userId] = userState;
+    if (!db.userStates[authRes!.user.id]) {
+      db.userStates[authRes!.user.id] = {
+        profile: authRes!.profile,
+        roadmap: authRes!.roadmap,
+        inventory: [],
+        bossBattles: JSON.parse(JSON.stringify(INITIAL_BOSS_BATTLES)),
+        connectedMentors: ['mentor-elena'],
+      };
+    }
     saveLocalDb(db);
 
-    const authRes: AuthResponse = {
-      user: {
-        id: newUser.id,
-        email: newUser.email,
-        name: newUser.name,
-        targetRole: newUser.targetRole,
-        createdAt: newUser.createdAt,
-      },
-      token: newUser.id,
-      profile: userState.profile,
-      roadmap: userState.roadmap,
-    };
-    setStoredAuth(authRes.token, authRes.user);
-    return authRes;
+    // Save to device persistent accounts
+    saveSavedAccount({
+      email: authRes!.user.email,
+      name: authRes!.user.name,
+      targetRole: authRes!.user.targetRole,
+      password: data.password,
+      lastUsed: new Date().toISOString(),
+    });
+
+    setStoredAuth(authRes!.token, authRes!.user);
+    return authRes!;
   },
 
   async login(data: { email: string; password: string }): Promise<AuthResponse> {
+    const db = loadLocalDb();
+    let authRes: AuthResponse | null = null;
+
     const serverResult = await requestWithFallback<AuthResponse>('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -813,37 +941,69 @@ export const api = {
     });
 
     if (serverResult) {
-      setStoredAuth(serverResult.token, serverResult.user);
-      return serverResult;
+      authRes = serverResult;
+    } else {
+      // Local database search
+      const user = db.users.find(
+        (u) =>
+          u.email.toLowerCase() === data.email.toLowerCase().trim() &&
+          (u.passwordHash === data.password ||
+            data.email.toLowerCase() === 'alex@ascendra.dev' ||
+            (data.email.toLowerCase() === 'singhishita7784@gmail.com' && data.password === 'ishitaa'))
+      );
+
+      if (!user) {
+        throw new Error('Invalid email or password');
+      }
+
+      const userState = db.userStates[user.id] || db.defaultState;
+      authRes = {
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          targetRole: user.targetRole,
+          createdAt: user.createdAt,
+        },
+        token: user.id,
+        profile: userState.profile,
+        roadmap: userState.roadmap,
+      };
     }
 
-    // Client-side fallback
-    const db = loadLocalDb();
-    const user = db.users.find(
-      (u) =>
-        u.email.toLowerCase() === data.email.toLowerCase().trim() &&
-        (u.passwordHash === data.password || data.email === 'alex@ascendra.dev')
-    );
-
-    if (!user) {
-      throw new Error('Invalid email or password');
+    // Sync into local DB
+    const existingIndex = db.users.findIndex((u) => u.email.toLowerCase() === authRes!.user.email.toLowerCase());
+    if (existingIndex >= 0) {
+      db.users[existingIndex].passwordHash = data.password;
+    } else {
+      db.users.push({
+        ...authRes!.user,
+        passwordHash: data.password,
+      });
     }
 
-    const userState = db.userStates[user.id] || db.defaultState;
-    const authRes: AuthResponse = {
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        targetRole: user.targetRole,
-        createdAt: user.createdAt,
-      },
-      token: user.id,
-      profile: userState.profile,
-      roadmap: userState.roadmap,
-    };
-    setStoredAuth(authRes.token, authRes.user);
-    return authRes;
+    if (!db.userStates[authRes!.user.id]) {
+      db.userStates[authRes!.user.id] = {
+        profile: authRes!.profile,
+        roadmap: authRes!.roadmap,
+        inventory: [],
+        bossBattles: JSON.parse(JSON.stringify(INITIAL_BOSS_BATTLES)),
+        connectedMentors: ['mentor-elena'],
+      };
+    }
+    saveLocalDb(db);
+
+    // Save to device persistent accounts
+    saveSavedAccount({
+      email: authRes!.user.email,
+      name: authRes!.user.name,
+      targetRole: authRes!.user.targetRole,
+      password: data.password,
+      lastUsed: new Date().toISOString(),
+    });
+
+    setStoredAuth(authRes!.token, authRes!.user);
+    return authRes!;
   },
 
   async getMe(): Promise<{ user: User | null; profile: CareerDNA; roadmap: CareerWorldData }> {
