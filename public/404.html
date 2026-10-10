@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Ascendra</title>
+    <script type="text/javascript">
+      // Single Page App redirect for GitHub Pages
+      // Keeps path and query parameters and redirects to index.html
+      const pathSegments = window.location.pathname.split('/');
+      // If deployed in repository subfolder, maintain origin and path
+      window.location.replace(
+        window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') +
+        window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + 'index.html' +
+        window.location.search + window.location.hash
+      );
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to Ascendra...</p>
+  </body>
+</html>
