@@ -59,6 +59,15 @@
   --theme-brand-gradient: linear-gradient(to top right, #fb7185, #f97316);
 }
 
+[data-theme="spiderman"] {
+  --theme-accent: #ef4444;
+  --theme-accent-hover: #dc2626;
+  --theme-edge: #3b82f6;
+  --theme-glow: rgba(239, 68, 68, 0.4);
+  --theme-bg-gradient: linear-gradient(135deg, rgba(239, 68, 68, 0.22), rgba(37, 99, 235, 0.22));
+  --theme-brand-gradient: linear-gradient(to top right, #ef4444, #2563eb);
+}
+
 /* ===================================================
    DEEP SURFACES RE-COLORING PER THEME
    =================================================== */
@@ -241,6 +250,64 @@
   background-color: #0b0507 !important;
 }
 
+/* 6. SPIDER-MAN (WEB-SLINGER) THEME STYLES */
+[data-theme="spiderman"] body,
+[data-theme="spiderman"] .bg-slate-950 {
+  background-color: #050814 !important;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(239, 68, 68, 0.12) 0%, transparent 55%),
+    radial-gradient(circle at 100% 100%, rgba(37, 99, 235, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 0% 100%, rgba(239, 68, 68, 0.08) 0%, transparent 45%) !important;
+}
+[data-theme="spiderman"] .bg-slate-900 {
+  background-color: #0d1326 !important;
+  border-color: rgba(239, 68, 68, 0.28) !important;
+}
+[data-theme="spiderman"] .bg-slate-900\/90,
+[data-theme="spiderman"] .bg-slate-900\/95,
+[data-theme="spiderman"] .bg-slate-950\/90,
+[data-theme="spiderman"] .bg-slate-950\/85 {
+  background-color: rgba(13, 19, 38, 0.94) !important;
+  border-color: rgba(239, 68, 68, 0.35) !important;
+}
+[data-theme="spiderman"] .border-slate-800 {
+  border-color: rgba(59, 130, 246, 0.25) !important;
+}
+[data-theme="spiderman"] .border-slate-700 {
+  border-color: rgba(239, 68, 68, 0.38) !important;
+}
+[data-theme="spiderman"] .text-sky-400,
+[data-theme="spiderman"] .text-sky-300 {
+  color: #f87171 !important;
+}
+[data-theme="spiderman"] .bg-sky-400,
+[data-theme="spiderman"] .bg-sky-500 {
+  background: linear-gradient(135deg, #ef4444, #2563eb) !important;
+  color: #ffffff !important;
+}
+[data-theme="spiderman"] .bg-sky-950,
+[data-theme="spiderman"] .bg-sky-950\/80 {
+  background-color: #1a102a !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+}
+[data-theme="spiderman"] .text-amber-400,
+[data-theme="spiderman"] .text-amber-300 {
+  color: #60a5fa !important;
+}
+[data-theme="spiderman"] .react-flow__background {
+  background-color: #050814 !important;
+}
+[data-theme="spiderman"] .react-flow__controls {
+  background-color: #0d1326 !important;
+  border: 1px solid rgba(239, 68, 68, 0.35) !important;
+}
+[data-theme="spiderman"] .react-flow__controls-button {
+  background-color: #0d1326 !important;
+  border-bottom: 1px solid rgba(239, 68, 68, 0.25) !important;
+  color: #f87171 !important;
+  fill: #f87171 !important;
+}
+
 /* ===================================================
    ANIMATION KEYFRAMES (CANDY FLOAT & AMBIENT SPARKLES)
    =================================================== */
@@ -309,6 +376,79 @@
 
 .animate-float-sparkle {
   animation: floatSparkle 16s linear infinite;
+}
+
+@keyframes webSwing {
+  0% {
+    transform: rotate(-16deg) translateY(0);
+  }
+  50% {
+    transform: rotate(16deg) translateY(8px);
+  }
+  100% {
+    transform: rotate(-16deg) translateY(0);
+  }
+}
+
+@keyframes spiderSenseWave {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    transform: scale(0.98);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+    transform: scale(1.02);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    transform: scale(0.98);
+  }
+}
+
+@keyframes spiderWebDrift {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(0.8);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.5;
+  }
+  85% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-115vh) rotate(180deg) scale(1.05);
+    opacity: 0;
+  }
+}
+
+@keyframes venomSpark {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 8px #60a5fa) drop-shadow(0 0 14px #ef4444);
+  }
+}
+
+.animate-web-swing {
+  transform-origin: top center;
+  animation: webSwing 4.5s ease-in-out infinite;
+}
+
+.animate-spider-sense {
+  animation: spiderSenseWave 2.2s infinite;
+}
+
+.animate-web-float {
+  animation: spiderWebDrift 17s ease-in-out infinite;
+}
+
+.animate-venom-spark {
+  animation: venomSpark 2s ease-in-out infinite;
 }
 
 @layer base {

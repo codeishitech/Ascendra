@@ -15,8 +15,9 @@ import { LoginPage } from './components/LoginPage';
 import { AnimatedBackground } from './components/AnimatedBackground';
 import { JudgeTourBanner } from './components/JudgeTourBanner';
 import { JudgeDeckModal } from './components/JudgeDeckModal';
+import { SpidermanThemeHUD } from './components/SpidermanThemeHUD';
 import { api, getStoredUser, clearStoredAuth } from './services/api';
-import { applyTheme, getStoredTheme } from './services/theme';
+import { applyTheme, getStoredTheme, type ThemeId } from './services/theme';
 import type {
   CareerDNA,
   CareerWorldData,
@@ -58,7 +59,19 @@ export default function App() {
   const [selectedMarkKnownNode, setSelectedMarkKnownNode] = useState<RoadmapNode | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [adaptiveNotice, setAdaptiveNotice] = useState<AdaptiveChangeLog | null>(null);
+  const [currentTheme, setCurrentTheme] = useState<ThemeId>(getStoredTheme());
   const [loading, setLoading] = useState(true);
+
+  // Sync theme changes
+  useEffect(() => {
+    const handleThemeChange = (e: any) => {
+      if (e.detail?.themeId) {
+        setCurrentTheme(e.detail.themeId);
+      }
+    };
+    window.addEventListener('themeChanged', handleThemeChange);
+    return () => window.removeEventListener('themeChanged', handleThemeChange);
+  }, []);
 
   // Load all data on mount or after login
   const loadData = useCallback(async () => {
@@ -282,6 +295,9 @@ export default function App() {
 
       {/* Main Content Viewport */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 md:px-6 py-6 space-y-6">
+        {/* Spider-Man Theme Special HUD Banner (Active when Spider-Man theme selected) */}
+        {currentTheme === 'spiderman' && <SpidermanThemeHUD />}
+
         {/* Adaptive Notice if route changed */}
         {adaptiveNotice && (
           <AdaptiveNotice
