@@ -596,6 +596,52 @@ function createDefaultState(): LocalUserState {
   };
 }
 
+function createNewUserState(targetRole: string = 'AI Research Engineer'): LocalUserState {
+  const freshNodes: RoadmapNode[] = INITIAL_NODES.map((n) => ({
+    ...n,
+    status: (n.prerequisites.length === 0 ? 'available' : 'locked') as any,
+    completedAt: undefined,
+    evidenceSubmitted: undefined,
+  }));
+
+  const { updatedNodes } = updateDeterministicProgression(freshNodes);
+
+  return {
+    profile: {
+      ...INITIAL_PROFILE,
+      targetRole,
+      title: 'Tier I Initiate',
+      xp: 0,
+      level: 1,
+      competenciesVerifiedCount: 0,
+      currentSkills: [
+        { id: `s-${Date.now()}-1`, name: 'Python', category: 'Core Tech', verification: 'self_reported', rating: 3 },
+        { id: `s-${Date.now()}-2`, name: 'Git & Version Control', category: 'Tooling', verification: 'project_evidence', rating: 4 },
+      ],
+      currentProjects: [],
+    },
+    roadmap: {
+      targetRole,
+      nodes: updatedNodes,
+      edges: JSON.parse(JSON.stringify(INITIAL_EDGES)),
+      lastAdaptiveChange: {
+        reason: `New career journey initialized for "${targetRole}". Begin your progression with any available Tier 1 quest!`,
+        timestamp: new Date().toISOString(),
+        affectedNodes: updatedNodes.filter((n) => n.status === 'available').map((n) => n.id),
+        unlockedCount: updatedNodes.filter((n) => n.status === 'available').length,
+      },
+    },
+    inventory: [],
+    bossBattles: JSON.parse(JSON.stringify(INITIAL_BOSS_BATTLES)).map((b: BossBattle) => ({
+      ...b,
+      status: 'locked',
+      hpCurrent: b.hpTotal,
+      phases: b.phases.map((p) => ({ ...p, completed: false })),
+    })),
+    connectedMentors: ['mentor-elena'],
+  };
+}
+
 function loadLocalDb(): LocalDatabase {
   try {
     const raw = localStorage.getItem(LOCAL_DB_KEY);
@@ -739,15 +785,8 @@ export const api = {
     };
     db.users.push(newUser);
 
-    const defaultState = createDefaultState();
-    defaultState.profile.targetRole = newUser.targetRole;
-    defaultState.roadmap.targetRole = newUser.targetRole;
-    defaultState.profile.title = 'Tier I Initiate';
-    defaultState.profile.xp = 0;
-    defaultState.profile.level = 1;
-    defaultState.profile.competenciesVerifiedCount = 0;
-
-    db.userStates[userId] = defaultState;
+    const userState = createNewUserState(newUser.targetRole);
+    db.userStates[userId] = userState;
     saveLocalDb(db);
 
     const authRes: AuthResponse = {
@@ -759,8 +798,8 @@ export const api = {
         createdAt: newUser.createdAt,
       },
       token: newUser.id,
-      profile: defaultState.profile,
-      roadmap: defaultState.roadmap,
+      profile: userState.profile,
+      roadmap: userState.roadmap,
     };
     setStoredAuth(authRes.token, authRes.user);
     return authRes;
@@ -1448,5 +1487,12 @@ export const api = {
 
     saveLocalDb(db);
     return { userMessage: userMsg, mentorMessage: mentorMsg };
+  },
+
+  async resetGuestProgress(): Promise<{ profile: CareerDNA; roadmap: CareerWorldData }> {
+    const db = loadLocalDb();
+    db.defaultState = createNewUserState('AI Research Engineer');
+    saveLocalDb(db);
+    return { profile: db.defaultState.profile, roadmap: db.defaultState.roadmap };
   },
 };

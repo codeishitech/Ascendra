@@ -107,6 +107,16 @@ export default function App() {
     loadData();
   };
 
+  // Reset demo / guest progress to Level 1
+  const handleResetGuestProgress = async () => {
+    const res = await api.resetGuestProgress();
+    setProfile(res.profile);
+    setRoadmap(res.roadmap);
+    setInventory([]);
+    const freshBoss = await api.getBossBattles();
+    setBossBattles(freshBoss);
+  };
+
   // Handle quest completed
   const handleQuestCompleted = (
     updatedNode: RoadmapNode,
@@ -274,6 +284,9 @@ export default function App() {
           <CareerTwinCard
             profile={profile}
             onEditProfile={() => setShowOnboarding(true)}
+            currentUser={currentUser}
+            onOpenAuth={() => setShowAuthModal(true)}
+            onResetProgress={handleResetGuestProgress}
           />
         )}
 

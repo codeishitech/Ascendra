@@ -1,12 +1,25 @@
-import { ShieldCheck, Award, Zap, Clock, Target, Sparkles, TrendingUp } from 'lucide-react';
-import type { CareerDNA } from '../types/career';
+import { useState } from 'react';
+import { ShieldCheck, Award, Zap, Clock, Target, Sparkles, TrendingUp, User as UserIcon, RotateCcw } from 'lucide-react';
+import type { CareerDNA, User } from '../types/career';
+import avatarCareerTwin from '../assets/images/avatar_career_twin_1791608601452.jpg';
 
 interface CareerTwinCardProps {
   profile: CareerDNA;
   onEditProfile: () => void;
+  currentUser?: User | null;
+  onOpenAuth?: () => void;
+  onResetProgress?: () => void;
 }
 
-export function CareerTwinCard({ profile, onEditProfile }: CareerTwinCardProps) {
+export function CareerTwinCard({
+  profile,
+  onEditProfile,
+  currentUser,
+  onOpenAuth,
+  onResetProgress,
+}: CareerTwinCardProps) {
+  const [imgError, setImgError] = useState(false);
+
   // XP level calculation (600 XP per level)
   const currentLevelBaseXP = (profile.level - 1) * 600;
   const nextLevelXP = profile.level * 600;
@@ -20,20 +33,26 @@ export function CareerTwinCard({ profile, onEditProfile }: CareerTwinCardProps) 
     <div className="p-6 bg-slate-900 border border-slate-800 rounded-2xl shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
       {/* Left Avatar + Core Identity */}
       <div className="flex items-center gap-5">
-        <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden border-2 border-sky-400/80 shadow-lg shadow-sky-500/20 shrink-0 bg-slate-950">
-          <img
-            src="/src/assets/images/avatar_career_twin_1791608601452.jpg"
-            alt="Career Twin Avatar"
-            className="w-full h-full object-cover object-top"
-            referrerPolicy="no-referrer"
-          />
+        <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden border-2 border-sky-400/80 shadow-lg shadow-sky-500/20 shrink-0 bg-slate-950 flex items-center justify-center">
+          {!imgError ? (
+            <img
+              src={avatarCareerTwin}
+              alt="Career Twin Avatar"
+              className="w-full h-full object-cover object-top"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-tr from-sky-950 via-indigo-950 to-slate-900 flex flex-col items-center justify-center text-sky-400">
+              <Sparkles className="w-8 h-8 text-sky-300 animate-pulse" />
+            </div>
+          )}
           <div className="absolute bottom-0 inset-x-0 bg-slate-950/80 backdrop-blur-xs py-0.5 text-center text-[10px] font-mono text-sky-300 font-bold">
             LVL {profile.level}
           </div>
         </div>
 
         <div>
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex flex-wrap items-center gap-2 mb-1">
             <span className="text-xs font-mono font-bold text-sky-400 uppercase tracking-wider">
               Career Twin Profile
             </span>
@@ -41,6 +60,17 @@ export function CareerTwinCard({ profile, onEditProfile }: CareerTwinCardProps) 
             <span className="text-xs font-mono text-amber-300 font-semibold">
               {profile.title}
             </span>
+
+            {currentUser ? (
+              <span className="ml-2 px-2 py-0.5 bg-emerald-950/80 border border-emerald-500/40 rounded text-[10px] font-mono text-emerald-300 font-semibold flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                {currentUser.name}
+              </span>
+            ) : (
+              <span className="ml-2 px-2 py-0.5 bg-amber-950/80 border border-amber-500/40 rounded text-[10px] font-mono text-amber-300 font-semibold">
+                Preview Sandbox
+              </span>
+            )}
           </div>
 
           <h3 className="text-xl md:text-2xl font-bold text-white font-display tracking-tight">
@@ -118,13 +148,25 @@ export function CareerTwinCard({ profile, onEditProfile }: CareerTwinCardProps) 
           </div>
         </div>
 
-        <button
-          onClick={onEditProfile}
-          className="w-full md:w-auto px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
-        >
-          <Sparkles className="w-3.5 h-3.5 text-sky-400" />
-          Re-calibrate Career DNA
-        </button>
+        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+          {!currentUser && onResetProgress && (
+            <button
+              onClick={onResetProgress}
+              title="Reset sandbox to a clean Level 1 Initiate slate"
+              className="px-3 py-2 bg-slate-950 hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-800 rounded-xl text-xs font-mono transition-colors flex items-center gap-1.5"
+            >
+              <RotateCcw className="w-3 h-3 text-slate-400" />
+              Start Fresh (Lvl 1)
+            </button>
+          )}
+          <button
+            onClick={onEditProfile}
+            className="w-full md:w-auto px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+            Calibrate Career DNA
+          </button>
+        </div>
       </div>
     </div>
   );

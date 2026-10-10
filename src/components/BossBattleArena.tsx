@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import type { BossBattle, BossPhase, CareerDNA } from '../types/career';
 import { api } from '../services/api';
+import bossBattleImg from '../assets/images/boss_battle_neural_core_1791608591104.jpg';
 
 interface BossBattleArenaProps {
   boss: BossBattle;
@@ -85,10 +86,9 @@ export function BossBattleArena({ boss, profile, onBossUpdated }: BossBattleAren
       <div className="relative rounded-2xl overflow-hidden border border-amber-500/40 bg-slate-950 shadow-2xl">
         <div className="relative h-72 md:h-80 w-full overflow-hidden">
           <img
-            src="/src/assets/images/boss_battle_neural_core_1791608591104.jpg"
+            src={bossBattleImg}
             alt="Boss Battle Neural Core"
             className="w-full h-full object-cover object-center filter brightness-85"
-            referrerPolicy="no-referrer"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent"></div>
 
